@@ -3,18 +3,21 @@ package fpoly.websitefpoly.controller;
 import fpoly.websitefpoly.common.AppConstant;
 import fpoly.websitefpoly.dto.InvoiceDetailDto;
 import fpoly.websitefpoly.dto.InvoiceDto;
+import fpoly.websitefpoly.dto.UserInfoDto;
 import fpoly.websitefpoly.entity.Invoice;
 import fpoly.websitefpoly.request.CreateInvocieRequest;
 import fpoly.websitefpoly.request.UpdateInvoiceRequest;
 import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.InvoiceDetailsService;
 import fpoly.websitefpoly.service.InvoiceService;
-import org.springframework.beans.factory.annotation.Autowired;
+import fpoly.websitefpoly.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Nguyen Hoang Long on 10/31/2020
@@ -25,11 +28,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/invoice")
 public class InvoiceController {
 
-    @Autowired
-    private InvoiceService invoiceService;
+    private final InvoiceService invoiceService;
+    private final InvoiceDetailsService invoiceDetailsService;
+    private final UserService userService;
 
-    @Autowired
-    private InvoiceDetailsService invoiceDetailsService;
+    public InvoiceController(InvoiceService invoiceService,
+                             InvoiceDetailsService invoiceDetailsService,
+                             UserService userService) {
+        this.invoiceService = invoiceService;
+        this.invoiceDetailsService = invoiceDetailsService;
+        this.userService = userService;
+    }
 
     @GetMapping(value = {"", "/"})
     private ResponeData<Page<InvoiceDto>> search(@RequestParam("status") String status, @PageableDefault(size = AppConstant.LIMIT_PAGE, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -81,11 +90,16 @@ public class InvoiceController {
         return invoiceService.setStatus(id, Invoice.HOAN_THANH);
     }
 
-    @GetMapping("/statistics/{status}")
-    private ResponeData<Long> statistics(@PathVariable String status) {
+    @GetMapping("/cancel/{id}")
+    private ResponeData<Boolean> cancel(@PathVariable Long id) {
+        return invoiceService.setStatus(id, Invoice.BI_HUY_BO);
+    }
+
+    @GetMapping("/top-user")
+    public ResponeData<Page<UserInfoDto>> topUserInfo(@PageableDefault(size = 10) Pageable pageable) {
         try {
             return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
-                    invoiceDetailsService.countInvoiceByStatus(status));
+                    userService.topUserInfo(pageable));
         } catch (Exception e) {
             return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
         }

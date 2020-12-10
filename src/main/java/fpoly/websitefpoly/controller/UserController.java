@@ -1,15 +1,14 @@
 package fpoly.websitefpoly.controller;
 
 
+import fpoly.websitefpoly.common.AppConstant;
+import fpoly.websitefpoly.common.ModelMapperUtils;
 import fpoly.websitefpoly.dto.InvoiceDetailDto;
-import fpoly.websitefpoly.exception.ResourceNotFoundException;
-import fpoly.websitefpoly.entity.User;
+import fpoly.websitefpoly.dto.UserDto;
 import fpoly.websitefpoly.repository.UserRepository;
+import fpoly.websitefpoly.request.UpdateUserRequest;
 import fpoly.websitefpoly.response.ResponeData;
-import fpoly.websitefpoly.security.CurrentUser;
-import fpoly.websitefpoly.security.UserPrincipal;
 import fpoly.websitefpoly.service.UserService;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,15 +25,28 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/me")
-    @PreAuthorize("hasRole('USER')")
-    public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-        return userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+    @GetMapping("")
+    public ResponeData<UserDto> detail(@RequestParam("email") String email) {
+        try {
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
+                    ModelMapperUtils.map(userRepository.findByEmail(email).get(), UserDto.class));
+        } catch (Exception e) {
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE);
+        }
     }
 
     @GetMapping("/my-invoice")
-    public ResponeData<List<InvoiceDetailDto>> getInvoiceUser(@RequestParam("email") String email){
+    public ResponeData<List<InvoiceDetailDto>> getInvoiceUser(@RequestParam("email") String email) {
         return userService.userInvoiceDetail(email);
+    }
+
+    @PutMapping("")
+    public ResponeData<UserDto> updateInfoUser(@RequestBody UpdateUserRequest updateUserRequest) {
+        try {
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
+                    userService.updateInfoUser(updateUserRequest));
+        } catch (Exception e) {
+            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
+        }
     }
 }

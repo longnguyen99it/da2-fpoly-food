@@ -10,6 +10,7 @@ import fpoly.websitefpoly.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -95,10 +96,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .disable()
                 .exceptionHandling()
-                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+//                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/",
+                .antMatchers(HttpMethod.GET,"/",
                         "/error",
                         "/favicon.ico",
                         "/**/*.png",
@@ -113,7 +114,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/category/**",
                         "/category**",
                         "/invoice**",
-                        "/invoice/**")
+                        "/invoice/**",
+                        "/menu/**",
+                        "/menu**")
                 .permitAll()
                 .antMatchers("/auth/**", "/oauth2/**")
                 .permitAll()

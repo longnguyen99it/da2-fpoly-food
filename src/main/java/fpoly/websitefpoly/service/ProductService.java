@@ -4,7 +4,6 @@ import fpoly.websitefpoly.dto.ProductDto;
 import fpoly.websitefpoly.request.CreateProductRequest;
 import fpoly.websitefpoly.request.SearchProductRequest;
 import fpoly.websitefpoly.request.UpdateProductRequest;
-import fpoly.websitefpoly.response.ResponeData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,13 +14,13 @@ import org.springframework.data.domain.Pageable;
  */
 public interface ProductService {
 
-    ResponeData<Page<ProductDto>> search(SearchProductRequest searchProductRequest, Pageable pageable) throws Exception;
+    Page<ProductDto> search(SearchProductRequest searchProductRequest, Pageable pageable) throws Exception;
 
-    ResponeData<ProductDto> created(CreateProductRequest createProductRequest) throws Exception;
+    ProductDto created(CreateProductRequest createProductRequest) throws Exception;
 
-    ResponeData<ProductDto> updated(Long id, UpdateProductRequest updateProductRequest) throws Exception;
+    ProductDto update(Long id, UpdateProductRequest updateProductRequest) throws Exception;
 
     ProductDto detail(Long id) throws Exception;
 
-    ResponeData<Boolean> deleted(Long id) throws Exception;
+    Boolean deleted(Long id) throws Exception;
 }

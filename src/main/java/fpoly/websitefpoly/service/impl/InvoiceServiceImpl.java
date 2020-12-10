@@ -58,6 +58,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (status.equals("finish")) {
             a = new String[]{Invoice.HOAN_THANH};
         }
+        if (status.equals("cancel")) {
+            a = new String[]{Invoice.BI_HUY_BO};
+        }
         Page<Invoice> invoicePage = invoiceRepository.searchInvoice(a, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(new Function<Invoice, InvoiceDto>() {
             @Override

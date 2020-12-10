@@ -1,19 +1,25 @@
 package fpoly.websitefpoly.service;
 
+import fpoly.websitefpoly.dto.MenuDto;
 import fpoly.websitefpoly.dto.ProductDto;
+import fpoly.websitefpoly.dto.UpdateMenuDtoRequest;
 import fpoly.websitefpoly.entity.Menu;
-import fpoly.websitefpoly.response.ResponeData;
+import fpoly.websitefpoly.request.CreateMenuDtoRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-/**
- * @author Nguyen Hoang Long
- * @create 11/27/2020
- * @project website-fpoly
- */
 public interface MenuService {
 
-    ResponeData<Page<Menu>> getAll(Pageable pageable);
+    Page<Menu> getAll(Pageable pageable);
 
-    ResponeData<Page<ProductDto>> getProductByMenu(Long id, Pageable pageable);
+    Page<ProductDto> getProductByMenu(Long id, Pageable pageable);
+
+    MenuDto create(CreateMenuDtoRequest createMenuDtoRequest) throws Exception;
+
+    MenuDto update(Long id, UpdateMenuDtoRequest createMenuDto) throws Exception;
+
+    MenuDto detail(Long id);
+
+    Boolean delete(Long id) throws Exception;
+
 }

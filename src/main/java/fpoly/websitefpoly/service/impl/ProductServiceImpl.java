@@ -1,6 +1,5 @@
 package fpoly.websitefpoly.service.impl;
 
-import fpoly.websitefpoly.common.AppConstant;
 import fpoly.websitefpoly.common.ModelMapperUtils;
 import fpoly.websitefpoly.dto.ProductDto;
 import fpoly.websitefpoly.entity.Category;
@@ -10,11 +9,9 @@ import fpoly.websitefpoly.entity.Topping;
 import fpoly.websitefpoly.repository.CategoryRepository;
 import fpoly.websitefpoly.repository.ProductRepository;
 import fpoly.websitefpoly.repository.ProductToppingRepository;
-import fpoly.websitefpoly.request.CategoryRequest;
 import fpoly.websitefpoly.request.CreateProductRequest;
 import fpoly.websitefpoly.request.SearchProductRequest;
 import fpoly.websitefpoly.request.UpdateProductRequest;
-import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.ProductService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
     private ProductToppingRepository productToppingRepository;
 
     @Override
-    public ResponeData<Page<ProductDto>> search(SearchProductRequest searchProductRequest, Pageable pageable) throws Exception {
+    public Page<ProductDto> search(SearchProductRequest searchProductRequest, Pageable pageable) throws Exception {
         final CriteriaBuilder cb = this.entityManagerFactory.getCriteriaBuilder();
         final CriteriaQuery<Product> query = cb.createQuery(Product.class);
         Object[] queryObjs = this.searchProductRootPersist(cb, query, searchProductRequest);
@@ -76,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
         countQuery.select(cbTotal.count(countQuery.from(Product.class)));
         countQuery.where((Predicate[]) queryObjs[1]);
         Long total = entityManager.createQuery(countQuery).getSingleResult();
-        return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, new PageImpl<>(productDtoList, pageable, total));
+        return new PageImpl<>(productDtoList, pageable, total);
     }
 
     private Object[] searchProductRootPersist(CriteriaBuilder cb, CriteriaQuery<?> query, SearchProductRequest resource) {
@@ -104,33 +101,30 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponeData<ProductDto> created(CreateProductRequest createProductRequest) throws Exception {
-        try {
-            Category category = categoryRepository.findByIdAndStatus(createProductRequest.getCategoryId(), "A");
-            Product product = ModelMapperUtils.map(createProductRequest, Product.class);
-            product.setId(null);
-            product.setCategory(category);
-            Product save = productRepository.save(product);
-            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, ModelMapperUtils.map(save, ProductDto.class));
-        } catch (Exception e) {
-            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE, null);
-        }
+    public ProductDto created(CreateProductRequest createProductRequest) throws Exception {
+        Category category = categoryRepository.findByIdAndStatus(createProductRequest.getCategoryId(), "A");
+        Product product = ModelMapperUtils.map(createProductRequest, Product.class);
+        product.setId(null);
+        product.setCategory(category);
+        Product save = productRepository.save(product);
+        return ModelMapperUtils.map(save, ProductDto.class);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponeData<ProductDto> updated(Long id, UpdateProductRequest updateProductRequest) throws Exception {
-        try {
-            Product product = productRepository.findByIdAndStatus(id, "A");
-            if (product == null) {
-                return new ResponeData<>(AppConstant.FILE_NOT_FOUND_CODE, AppConstant.FILE_NOT_FOUND_MESSAGE, null);
-            }
-            product = setUpdate(product, updateProductRequest);
-            Product update = productRepository.save(product);
-            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, ModelMapperUtils.map(update, ProductDto.class));
-        } catch (Exception e) {
-            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE, null);
+    public ProductDto update(Long id, UpdateProductRequest updateProductRequest) throws Exception {
+        Product product = productRepository.findByIdAndStatus(id, "A");
+        if (product == null) {
+            throw new Exception("Không tìm thấy product");
         }
+        Category category = categoryRepository.findByIdAndStatus(updateProductRequest.getCategoryId(), "A");
+        if (category == null) {
+            throw new Exception("Không tìm thấy category");
+        }
+        product = setUpdate(product, updateProductRequest);
+        product.setCategory(category);
+        Product update = productRepository.save(product);
+        return ModelMapperUtils.map(update, ProductDto.class);
     }
 
     private Product setUpdate(Product product, UpdateProductRequest updateProductRequest) {
@@ -143,27 +137,21 @@ public class ProductServiceImpl implements ProductService {
         if (!StringUtils.isEmpty(updateProductRequest.getImage())) {
             product.setImage(updateProductRequest.getImage());
         }
-        if (!StringUtils.isEmpty(updateProductRequest.getStatus())) {
-            product.setStatus(updateProductRequest.getStatus());
-        }
         if (!StringUtils.isEmpty(updateProductRequest.getPrice().toString())) {
             product.setPrice(updateProductRequest.getPrice());
         }
         if (!StringUtils.isEmpty(updateProductRequest.getWarehouses().toString())) {
             product.setWarehouses(updateProductRequest.getWarehouses());
         }
-
-        if (updateProductRequest.getCategoryRequestList() != null) {
-            for (CategoryRequest categoryRequest : updateProductRequest.getCategoryRequestList()) {
-
-            }
+        if (!StringUtils.isEmpty(updateProductRequest.getUnit())) {
+            product.setUnit(updateProductRequest.getUnit());
         }
         return product;
     }
 
     @Override
     public ProductDto detail(Long id) throws Exception {
-        Product product = productRepository.findByIdAndStatus(id, "A");
+        Product product = productRepository.findById(id).get();
         ProductDto productDto = ModelMapperUtils.map(product, ProductDto.class);
         List<ProductTopping> productToppingList = productToppingRepository.findAllByProductId(id);
         List<Topping> toppingList = new ArrayList<>();
@@ -178,14 +166,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponeData<Boolean> deleted(Long id) throws Exception {
+    public Boolean deleted(Long id) throws Exception {
         Product product = productRepository.findByIdAndStatus(id, "A");
         if (product != null) {
 //            productEntity.setDeletedBy(Flag.userEntityFlag.getEmail());
             product.setStatus("D");
             productRepository.save(product);
-            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, true);
+            return true;
         }
-        return new ResponeData<>(AppConstant.FILE_NOT_FOUND_CODE, AppConstant.FILE_NOT_FOUND_MESSAGE, false);
+        return false;
     }
 }

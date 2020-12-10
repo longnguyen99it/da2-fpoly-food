@@ -27,4 +27,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
     List<Invoice> findAllByUser(User user);
 
     long countAllByStatus(String status);
+
+    @Query("select sum(inv.amountTotal) from Invoice inv where inv.user = ?1 and inv.status = 'Hoàn_thành' group by inv.user.id")
+    double sumTotalInvoice(User user);
 }

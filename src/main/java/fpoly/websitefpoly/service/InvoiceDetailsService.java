@@ -13,9 +13,9 @@ public interface InvoiceDetailsService {
 
     InvoiceDetailDto getInvoiceDetails(Long id);
 
-    long countInvoiceNew();
 
-    long countInvoiceByStatus(String status);
+
+
 
     Double revenue(Date fromDate, Date toDate);
 }

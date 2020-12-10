@@ -20,9 +20,9 @@ public class UpdateProductRequest {
 
     private String description;
 
-    private String status;
+    private String unit;
 
     private Integer warehouses;
 
-    private List<CategoryRequest> categoryRequestList;
+    private Long categoryId;
 }

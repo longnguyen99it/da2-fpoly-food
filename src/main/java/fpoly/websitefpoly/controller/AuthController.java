@@ -1,9 +1,9 @@
 package fpoly.websitefpoly.controller;
 
 
+import fpoly.websitefpoly.entity.AuthProvider;
 import fpoly.websitefpoly.entity.User;
 import fpoly.websitefpoly.exception.BadRequestException;
-import fpoly.websitefpoly.entity.AuthProvider;
 import fpoly.websitefpoly.payload.ApiResponse;
 import fpoly.websitefpoly.payload.AuthResponse;
 import fpoly.websitefpoly.payload.LoginRequest;
@@ -60,7 +60,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("Email address already in use.");
         }
 

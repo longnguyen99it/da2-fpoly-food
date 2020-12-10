@@ -73,20 +73,7 @@ public class InvoiceDetailsServiceImpl implements InvoiceDetailsService {
         }
     }
 
-    @Override
-    public long countInvoiceNew() {
-        long count1 = invoiceRepository.countAllByStatus(Invoice.CHUA_SU_LY);
-        long count2 = invoiceRepository.countAllByStatus(Invoice.ĐANG_XU_LY);
-        return count1 + count2;
-    }
 
-    @Override
-    public long countInvoiceByStatus(String status) {
-        if (status.equals(Invoice.CHUA_SU_LY) || status.equals(Invoice.ĐANG_XU_LY)) {
-            return countInvoiceNew();
-        }
-        return invoiceRepository.countAllByStatus(status);
-    }
 
     @Override
     public Double revenue(Date fromDate, Date toDate) {

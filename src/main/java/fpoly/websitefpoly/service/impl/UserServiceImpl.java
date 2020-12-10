@@ -1,19 +1,27 @@
 package fpoly.websitefpoly.service.impl;
 
 import fpoly.websitefpoly.common.AppConstant;
+import fpoly.websitefpoly.common.ModelMapperUtils;
 import fpoly.websitefpoly.dto.InvoiceDetailDto;
+import fpoly.websitefpoly.dto.UserDto;
+import fpoly.websitefpoly.dto.UserInfoDto;
 import fpoly.websitefpoly.entity.Invoice;
 import fpoly.websitefpoly.entity.User;
 import fpoly.websitefpoly.repository.InvoiceRepository;
 import fpoly.websitefpoly.repository.UserRepository;
+import fpoly.websitefpoly.request.UpdateUserRequest;
 import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.InvoiceDetailsService;
 import fpoly.websitefpoly.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -48,5 +56,33 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
         }
+    }
+
+    @Override
+    public Page<UserInfoDto> topUserInfo(Pageable pageable) {
+        Page<User> userPage = userRepository.topInvoice(Invoice.HOAN_THANH, pageable);
+        Page<UserInfoDto> userInfoDtoPage = userPage.map(new Function<User, UserInfoDto>() {
+            @Override
+            public UserInfoDto apply(User user) {
+                Double totalInvoice = invoiceRepository.sumTotalInvoice(user);
+                UserInfoDto userInfoDto = ModelMapperUtils.map(user, UserInfoDto.class);
+                userInfoDto.setTotalPrice(totalInvoice.toString());
+                return userInfoDto;
+            }
+        });
+        return userInfoDtoPage;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserDto updateInfoUser(UpdateUserRequest updateUserRequest) throws Exception {
+        User user = userRepository.findByEmail(updateUserRequest.getEmail()).get();
+        if (user == null) {
+            throw new Exception("Không tìm thấy user");
+        }
+        user.setAddress(updateUserRequest.getAddress());
+        user.setPhone(updateUserRequest.getPhone());
+        User update = userRepository.save(user);
+        return ModelMapperUtils.map(update, UserDto.class);
     }
 }

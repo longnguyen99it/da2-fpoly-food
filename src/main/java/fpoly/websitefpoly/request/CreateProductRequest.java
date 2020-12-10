@@ -9,18 +9,12 @@ import lombok.Data;
  */
 @Data
 public class CreateProductRequest {
-
     private String productName;
-
     private Double price;
-
     private String image;
-
     private String description;
-
+    private String unit;
     private String status;
-
     private Integer warehouses;
-
     private Long categoryId;
 }
