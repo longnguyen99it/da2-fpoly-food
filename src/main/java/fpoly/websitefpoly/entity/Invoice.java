@@ -20,19 +20,12 @@ import java.util.Date;
 public class Invoice implements Serializable {
     private static final long serialVersionUID = -1000119078147252957L;
 
-    public static final String CHUA_SU_LY = "Chưa_sử_lý";
-    public static final String ĐANG_XU_LY = "Đang_xử_lý";
-    public static final String ĐANG_CHẾ_BIẾN = "Đang_chế_biến";
-    public static final String VAN_CHUYEN = "Vận_chuyển";
-
-    public static final String ĐA_DUOC_XU_LY = "Đã_được_xử_lý";
-    public static final String BI_HUY_BO = "Bị_hủy_bỏ";
-
-    public static final String HOAN_LAI_ = "Hoàn_lại";
-    public static final String HOAN_THANH = "Hoàn_thành";
-    public static final String TU_CHOI_ = "Từ_chối";
-    public static final String THAT_BAI_ = "Thất_bại";
-    public static final String HET_HAN_ = "Hết_hạn";
+    public static final String NEW = "new";
+    public static final String WATCHED = "watched";
+    public static final String PROCESSING = "processing";
+    public static final String TRANSPORT = "transport";
+    public static final String FINISH = "finish";
+    public static final String CANCEL = "cancel";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -47,19 +47,19 @@ public class InvoiceServiceImpl implements InvoiceService {
     public ResponeData<Page<InvoiceDto>> search(String status, Pageable pageable) throws Exception {
         String[] a = new String[0];
         if (status.equals("new")) {
-            a = new String[]{Invoice.ĐANG_XU_LY, Invoice.CHUA_SU_LY};
+            a = new String[]{Invoice.NEW, Invoice.WATCHED};
         }
         if (status.equals("processing")) {
-            a = new String[]{Invoice.ĐANG_CHẾ_BIẾN};
+            a = new String[]{Invoice.PROCESSING};
         }
         if (status.equals("transport")) {
-            a = new String[]{Invoice.VAN_CHUYEN};
+            a = new String[]{Invoice.TRANSPORT};
         }
         if (status.equals("finish")) {
-            a = new String[]{Invoice.HOAN_THANH};
+            a = new String[]{Invoice.FINISH};
         }
         if (status.equals("cancel")) {
-            a = new String[]{Invoice.BI_HUY_BO};
+            a = new String[]{Invoice.CANCEL};
         }
         Page<Invoice> invoicePage = invoiceRepository.searchInvoice(a, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(new Function<Invoice, InvoiceDto>() {
@@ -87,7 +87,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                     .deliveryAddress(createInvocieRequest.getDeliveryAddress())
                     .description(createInvocieRequest.getDescription())
                     .paymentMethods(createInvocieRequest.getPaymentMethods())
-                    .status(Invoice.CHUA_SU_LY)
+                    .status(Invoice.NEW)
                     .createdAt(new Date())
                     .build();
             Invoice saveInvoice = invoiceRepository.save(invoice);
@@ -175,7 +175,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     public ResponeData<Boolean> transport(Long id) {
         Optional<Invoice> invoice = invoiceRepository.findById(id);
         if (invoice.isPresent()) {
-            invoice.get().setStatus(Invoice.VAN_CHUYEN);
+            invoice.get().setStatus(Invoice.TRANSPORT);
             invoiceRepository.save(invoice.get());
             return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, true);
         }

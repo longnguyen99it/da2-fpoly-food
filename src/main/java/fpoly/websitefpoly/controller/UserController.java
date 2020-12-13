@@ -5,10 +5,15 @@ import fpoly.websitefpoly.common.AppConstant;
 import fpoly.websitefpoly.common.ModelMapperUtils;
 import fpoly.websitefpoly.dto.InvoiceDetailDto;
 import fpoly.websitefpoly.dto.UserDto;
+import fpoly.websitefpoly.entity.User;
+import fpoly.websitefpoly.exception.ResourceNotFoundException;
 import fpoly.websitefpoly.repository.UserRepository;
 import fpoly.websitefpoly.request.UpdateUserRequest;
 import fpoly.websitefpoly.response.ResponeData;
+import fpoly.websitefpoly.security.CurrentUser;
+import fpoly.websitefpoly.security.UserPrincipal;
 import fpoly.websitefpoly.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +38,13 @@ public class UserController {
         } catch (Exception e) {
             return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE);
         }
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+        return userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
     }
 
     @GetMapping("/my-invoice")

@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserInfoDto> topUserInfo(Pageable pageable) {
-        Page<User> userPage = userRepository.topInvoice(Invoice.HOAN_THANH, pageable);
+        Page<User> userPage = userRepository.topInvoice(Invoice.FINISH, pageable);
         Page<UserInfoDto> userInfoDtoPage = userPage.map(new Function<User, UserInfoDto>() {
             @Override
             public UserInfoDto apply(User user) {

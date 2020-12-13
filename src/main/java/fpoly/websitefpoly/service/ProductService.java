@@ -1,9 +1,7 @@
 package fpoly.websitefpoly.service;
 
 import fpoly.websitefpoly.dto.ProductDto;
-import fpoly.websitefpoly.request.CreateProductRequest;
-import fpoly.websitefpoly.request.SearchProductRequest;
-import fpoly.websitefpoly.request.UpdateProductRequest;
+import fpoly.websitefpoly.request.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -23,4 +21,8 @@ public interface ProductService {
     ProductDto detail(Long id) throws Exception;
 
     Boolean deleted(Long id) throws Exception;
+
+    ProductToppingDto updateTopptingByProduct(Long id, ToppingRequest toppingRequest) throws Exception;
+
+    ProductToppingDto toppingByProduct(Long id);
 }

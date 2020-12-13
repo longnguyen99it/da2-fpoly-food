@@ -9,9 +9,7 @@ import fpoly.websitefpoly.entity.Topping;
 import fpoly.websitefpoly.repository.CategoryRepository;
 import fpoly.websitefpoly.repository.ProductRepository;
 import fpoly.websitefpoly.repository.ProductToppingRepository;
-import fpoly.websitefpoly.request.CreateProductRequest;
-import fpoly.websitefpoly.request.SearchProductRequest;
-import fpoly.websitefpoly.request.UpdateProductRequest;
+import fpoly.websitefpoly.request.*;
 import fpoly.websitefpoly.service.ProductService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,5 +173,40 @@ public class ProductServiceImpl implements ProductService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public ProductToppingDto updateTopptingByProduct(Long id, ToppingRequest toppingRequest) throws Exception {
+        Product product = productRepository.findByIdAndStatus(id, "A");
+        List<ProductTopping> productToppingList = productToppingRepository.findAllByProductId(product.getId());
+        for (ProductTopping productTopping : productToppingList){
+            productToppingRepository.delete(productTopping);
+        }
+        for (Topping topping : toppingRequest.getToppingList()){
+            ProductTopping productTopping = ProductTopping.builder()
+                    .topping(topping)
+                    .product(product)
+                    .build();
+            productToppingRepository.save(productTopping);
+        }
+        List<ProductTopping> productToppingList2 = productToppingRepository.findAllByProductId(product.getId());
+        List<Topping> toppings = new ArrayList<>();
+        for (ProductTopping productTopping : productToppingList2){
+            toppings.add(productTopping.getTopping());
+        }
+        ProductToppingDto productToppingDto = new ProductToppingDto(toppings);
+        return productToppingDto;
+    }
+
+    @Override
+    public ProductToppingDto toppingByProduct(Long id) {
+        Product product = productRepository.findByIdAndStatus(id, "A");
+        List<ProductTopping> productToppingList = productToppingRepository.findAllByProductId(product.getId());
+        List<Topping> toppings = new ArrayList<>();
+        for (ProductTopping productTopping : productToppingList){
+            toppings.add(productTopping.getTopping());
+        }
+        ProductToppingDto productToppingDto = new ProductToppingDto(toppings);
+        return productToppingDto;
     }
 }

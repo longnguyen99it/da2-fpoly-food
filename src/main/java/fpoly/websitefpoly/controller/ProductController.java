@@ -2,9 +2,7 @@ package fpoly.websitefpoly.controller;
 
 import fpoly.websitefpoly.common.AppConstant;
 import fpoly.websitefpoly.dto.ProductDto;
-import fpoly.websitefpoly.request.CreateProductRequest;
-import fpoly.websitefpoly.request.SearchProductRequest;
-import fpoly.websitefpoly.request.UpdateProductRequest;
+import fpoly.websitefpoly.request.*;
 import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -71,5 +71,22 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/{id}/topping")
+    public ResponeData<ProductToppingDto> toppingByProuct(@PathVariable Long id) {
+        try {
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, productService.toppingByProduct(id));
+        } catch (Exception e) {
+            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
+        }
+    }
 
+    @PostMapping("/{id}/topping")
+    public ResponeData<ProductToppingDto> updateToppingByProduct(@PathVariable Long id,@RequestBody ToppingRequest toppingRequest) {
+        try {
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
+                    productService.updateTopptingByProduct(id, toppingRequest));
+        } catch (Exception e) {
+            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
+        }
+    }
 }

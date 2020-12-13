@@ -35,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Page<CategoryDto> search(SearchCategoryRequest seachCategoryRequest, Pageable pageable) throws Exception {
-        Page<Category> categoryPage = categoryRepository.findAll(pageable);
+        Page<Category> categoryPage = categoryRepository.findAllByStatus("A",pageable);
         Page<CategoryDto> categoryDtoPage = categoryPage.map(new Function<Category, CategoryDto>() {
             @Override
             public CategoryDto apply(Category category) {
@@ -51,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto create(CreateCategoryRequest createCategoryRequest) throws Exception {
         Category category = ModelMapperUtils.map(createCategoryRequest, Category.class);
+        category.setStatus("A");
         Category save = categoryRepository.save(category);
         CategoryDto categoryDto = ModelMapperUtils.map(save, CategoryDto.class);
         return categoryDto;
@@ -60,10 +61,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto update(Long id, UpdateCategoryRequest updateCategoryRequest) throws Exception {
         Category category = categoryRepository.findById(id).get();
-        if (category != null) {
+        if (category == null) {
             throw new Exception("Not Fount");
         }
-        category = ModelMapperUtils.map(updateCategoryRequest, Category.class);
+        category.setCategoryName(updateCategoryRequest.getCategoryName());
+        category.setImage(updateCategoryRequest.getImage());
+        category.setStatus("A");
         Category save = categoryRepository.save(category);
         return ModelMapperUtils.map(save, CategoryDto.class);
     }

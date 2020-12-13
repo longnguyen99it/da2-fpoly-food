@@ -42,8 +42,8 @@ public class InvoiceDetailsServiceImpl implements InvoiceDetailsService {
             if (!invoiceEntity.isPresent()) {
                 return null;
             }
-            if (invoiceEntity.get().getStatus().equals(Invoice.CHUA_SU_LY)) {
-                invoiceEntity.get().setStatus(Invoice.ĐANG_XU_LY);
+            if (invoiceEntity.get().getStatus().equals(Invoice.NEW)) {
+                invoiceEntity.get().setStatus(Invoice.WATCHED);
             }
             Invoice update = invoiceRepository.save(invoiceEntity.get());
             InvoiceInfo invoiceInfo = ModelMapperUtils.map(update, InvoiceInfo.class);
@@ -72,9 +72,7 @@ public class InvoiceDetailsServiceImpl implements InvoiceDetailsService {
             return null;
         }
     }
-
-
-
+    
     @Override
     public Double revenue(Date fromDate, Date toDate) {
         return null;

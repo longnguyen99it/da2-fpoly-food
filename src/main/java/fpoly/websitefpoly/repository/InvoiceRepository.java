@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,4 +31,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
 
     @Query("select sum(inv.amountTotal) from Invoice inv where inv.user = ?1 and inv.status = 'Hoàn_thành' group by inv.user.id")
     double sumTotalInvoice(User user);
+
+    @Query("SELECT e FROM Invoice e WHERE e.createdAt BETWEEN :startDate AND :endDate")
+    Double chartInvoice(@Param(value = "startDate") Date startDate,@Param(value = "endDate") Date endDate);
 }

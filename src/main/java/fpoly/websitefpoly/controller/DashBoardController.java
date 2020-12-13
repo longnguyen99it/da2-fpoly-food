@@ -1,6 +1,7 @@
 package fpoly.websitefpoly.controller;
 
 import fpoly.websitefpoly.common.AppConstant;
+import fpoly.websitefpoly.dto.ChartDto;
 import fpoly.websitefpoly.dto.StatisticsDto;
 import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.DashBoardService;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/dashboard")
@@ -32,8 +35,14 @@ public class DashBoardController {
         }
     }
 
-    @GetMapping("/chart/{type}")
-    private ResponeData<StatisticsDto> chart(@PathVariable String type) {
-        return null;
+    @GetMapping("/chart/{type}/{month}/{year}")
+    private ResponeData<ChartDto> chart(@PathVariable(value = "type") String type, @PathVariable(value = "month") int month, @PathVariable(value = "year") int year) throws ParseException {
+        try {
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE,AppConstant.SUCCESSFUL_MESAGE,
+                    dashBoardService.chart(type, month, year));
+        }catch (Exception e){
+            System.out.println(e);
+            return new ResponeData<>(AppConstant.ERROR_CODE,AppConstant.ERROR_MESSAGE);
+        }
     }
 }

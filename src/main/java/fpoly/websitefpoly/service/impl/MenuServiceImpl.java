@@ -42,7 +42,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public Page<Menu> getAll(Pageable pageable) {
-        return menuRepository.findAll(pageable);
+        return menuRepository.findAllByStatus("A",pageable);
     }
 
     @Override
@@ -52,9 +52,9 @@ public class MenuServiceImpl implements MenuService {
             @SneakyThrows
             @Override
             public ProductDto apply(MenuProduct menuProduct) {
-                Product product = productRepository.findByIdAndStatus(menuProduct.getProduct().getId(),"A");
-                if(product == null){
-
+                Product product = productRepository.findByIdAndStatus(menuProduct.getProduct().getId(), "A");
+                if (product == null) {
+                    return null;
                 }
                 ProductDto productDto = productService.detail(menuProduct.getId());
                 return productDto;
@@ -73,19 +73,28 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public MenuDto update(Long id, UpdateMenuDtoRequest createMenuDto) throws Exception {
-        return null;
+    public MenuDto update(Long id, UpdateMenuDtoRequest updateMenuDtoRequest) throws Exception {
+        Menu menu = menuRepository.findById(id).get();
+        menu.setName(updateMenuDtoRequest.getName());
+        menu.setStatus("A");
+        menuRepository.save(menu);
+        return ModelMapperUtils.map(menu,MenuDto.class);
     }
 
     @Override
     public MenuDto detail(Long id) {
-
         return null;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean delete(Long id) throws Exception {
-        return null;
+        Menu menu = menuRepository.findById(id).get();
+        if (menu == null){
+            throw new Exception();
+        }
+        menu.setStatus("D");
+        menuRepository.save(menu);
+        return true;
     }
 }

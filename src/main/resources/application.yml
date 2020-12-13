@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/fpoly-food?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
     username: root
-    password: 1234
+    password: NTQ@2020
   #    url: jdbc:postgresql://ec2-23-23-36-227.compute-1.amazonaws.com:5432/d7lldbre3niolk
   #    username: virqlyhndvwxvv
   #    password: 71e1f23b8b310d4d71677437e4ccc4ca33bb2107b477a526dd02e7c0e7be545a
@@ -10,7 +10,7 @@ spring:
   jpa:
 #    show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       #      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
       naming-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
@@ -57,6 +57,7 @@ app:
     # redirectUri mentioned by the client in the /oauth2/authorize request.
     # We're not using cookies because they won't work well in mobile clients.
     authorizedRedirectUris:
+      - https://fpolyfoodapp.netlify.app/oauth2/redirect
       - https://fpolyfood.netlify.app/
       - https://fpolyfood.netlify.app
       - https://fpolyfood.netlify.app/#/
@@ -65,3 +66,4 @@ app:
       - myiosapp://oauth2/redirect
       - https://fpoly-food.netlify.app/oauth2/redirect
       - http://bf9b116b4ce0.ngrok.io
+      - http://1640a75ceb42.ngrok.io/oauth2/redirect

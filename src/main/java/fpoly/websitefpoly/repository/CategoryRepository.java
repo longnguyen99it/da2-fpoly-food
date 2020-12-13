@@ -14,5 +14,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query("select cate from Category cate where cate.categoryName like ?1 and cate.status like ?2")
     Page<Category> getCategoryByStatus(String name,String status,Pageable pageable);
 
+    Page<Category> findAllByStatus(String status,Pageable pageable);
+
     Category findByIdAndStatus(Long id, String status);
 }

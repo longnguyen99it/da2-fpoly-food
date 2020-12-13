@@ -17,8 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * @author Nguyen Hoang Long on 10/31/2020
  * @created 10/31/2020
@@ -82,17 +80,17 @@ public class InvoiceController {
 
     @GetMapping("/processing/{id}")
     private ResponeData<Boolean> processing(@PathVariable Long id) {
-        return invoiceService.setStatus(id, Invoice.ĐANG_CHẾ_BIẾN);
+        return invoiceService.setStatus(id, Invoice.PROCESSING);
     }
 
     @GetMapping("/finish/{id}")
     private ResponeData<Boolean> finish(@PathVariable Long id) {
-        return invoiceService.setStatus(id, Invoice.HOAN_THANH);
+        return invoiceService.setStatus(id, Invoice.FINISH);
     }
 
     @GetMapping("/cancel/{id}")
     private ResponeData<Boolean> cancel(@PathVariable Long id) {
-        return invoiceService.setStatus(id, Invoice.BI_HUY_BO);
+        return invoiceService.setStatus(id, Invoice.CANCEL);
     }
 
     @GetMapping("/top-user")

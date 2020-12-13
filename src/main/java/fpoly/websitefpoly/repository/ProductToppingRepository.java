@@ -1,6 +1,8 @@
 package fpoly.websitefpoly.repository;
 
+import fpoly.websitefpoly.entity.Product;
 import fpoly.websitefpoly.entity.ProductTopping;
+import fpoly.websitefpoly.entity.Topping;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,8 @@ import java.util.List;
  * @project website-fpoly
  */
 @Repository
-public interface ProductToppingRepository extends JpaRepository<ProductTopping,Long> {
+public interface ProductToppingRepository extends JpaRepository<ProductTopping, Long> {
     List<ProductTopping> findAllByProductId(Long id);
+
+    ProductTopping findByProductAndTopping(Product product, Topping topping);
 }
