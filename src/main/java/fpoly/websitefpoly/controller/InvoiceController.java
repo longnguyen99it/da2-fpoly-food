@@ -47,14 +47,15 @@ public class InvoiceController {
         }
     }
 
-    @PostMapping("/")
-    public ResponeData<InvoiceDto> create(@RequestBody CreateInvocieRequest createInvocieRequest) throws Exception {
-        return invoiceService.created(createInvocieRequest);
+    @PostMapping("/{type}")
+    public ResponeData<InvoiceDto> create(@PathVariable String type, @RequestBody CreateInvocieRequest createInvocieRequest) throws Exception {
+        return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
+                invoiceService.create(type, createInvocieRequest));
     }
 
     @PutMapping("/{id}")
     public ResponeData<InvoiceDto> update(@PathVariable Long id, @RequestBody UpdateInvoiceRequest updateInvoiceRequest) throws Exception {
-        return invoiceService.updated(id, updateInvoiceRequest);
+        return invoiceService.update(id, updateInvoiceRequest);
     }
 
     @GetMapping("/{id}")

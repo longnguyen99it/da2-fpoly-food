@@ -56,6 +56,9 @@ public class Invoice implements Serializable {
     @Column(name = "receiving_time")
     private Date receivingTime;
 
+    @Column(name = "type")
+    private String type;
+
     @Column(name = "created_at")
     private Date createdAt;
 

@@ -6,16 +6,22 @@ import fpoly.websitefpoly.repository.InvoiceRepository;
 import fpoly.websitefpoly.service.DashBoardService;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Service
 public class DashBoardServiceImpl implements DashBoardService {
     private final InvoiceRepository invoiceRepository;
+    private final EntityManagerFactory entityManagerFactory;
+    private final EntityManager entityManager;
 
-    public DashBoardServiceImpl(InvoiceRepository invoiceRepository) {
+    public DashBoardServiceImpl(InvoiceRepository invoiceRepository, EntityManagerFactory entityManagerFactory, EntityManager entityManager) {
         this.invoiceRepository = invoiceRepository;
+        this.entityManagerFactory = entityManagerFactory;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -30,11 +36,9 @@ public class DashBoardServiceImpl implements DashBoardService {
         if (type.equals("month")) {
             return chartMonth(moth, year);
         }
-        if (type.equals("year")) {
-
-        }
         return null;
     }
+
 
     public ChartDto chartMonth(int month, int year) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd hh:mm:ss");
@@ -56,10 +60,12 @@ public class DashBoardServiceImpl implements DashBoardService {
         Double value[] = new Double[day];
         for (int i = 0; i < day; i++) {
             key[i] = "Ngày : " + (i + 1);
-            Date startDate = simpleDateFormat.parse("2020-12-11 00:00:00");
-            Date endDate = simpleDateFormat.parse("2020-12-11 23:59:59");
-            Double total = invoiceRepository.chartInvoice(startDate, endDate);
-            value[i] = total;
+            String startDate = "2020-12-" + (i + 1) + " 00:00:00";
+            String endDate = "2020-12-" + (i + 1) + " 23:59:59";
+            String sql = "select sum(inv.amountTotal) from Invoice inv where inv.createdAt " +
+                    "between '" + startDate + "' and '" + endDate + "'";
+            TypedQuery<Double> doubleTypedQuery = (TypedQuery<Double>) entityManager.createQuery(sql);
+            value[i] = (doubleTypedQuery.getSingleResult() == null) ? 0D : doubleTypedQuery.getSingleResult();
         }
         ChartDto chartDto = new ChartDto(key, value);
         return chartDto;

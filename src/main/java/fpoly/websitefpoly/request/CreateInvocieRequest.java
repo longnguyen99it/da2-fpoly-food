@@ -1,6 +1,5 @@
 package fpoly.websitefpoly.request;
 
-import fpoly.websitefpoly.dto.ProductDto;
 import lombok.Data;
 
 import java.util.List;

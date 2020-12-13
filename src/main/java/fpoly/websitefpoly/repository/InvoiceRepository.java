@@ -32,6 +32,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
     @Query("select sum(inv.amountTotal) from Invoice inv where inv.user = ?1 and inv.status = 'Hoàn_thành' group by inv.user.id")
     double sumTotalInvoice(User user);
 
-    @Query("SELECT e FROM Invoice e WHERE e.createdAt BETWEEN :startDate AND :endDate")
+    @Query(value = "SELECT e FROM Invoice e WHERE e.createdAt BETWEEN :startDate AND :endDate",nativeQuery = true)
     Double chartInvoice(@Param(value = "startDate") Date startDate,@Param(value = "endDate") Date endDate);
 }

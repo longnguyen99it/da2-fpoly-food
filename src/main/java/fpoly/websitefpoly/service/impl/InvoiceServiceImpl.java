@@ -72,9 +72,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, invoiceDtoPage);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResponeData<InvoiceDto> created(CreateInvocieRequest createInvocieRequest) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public InvoiceDto create(String type,CreateInvocieRequest createInvocieRequest) throws Exception {
         try {
 
             Optional<User> user = userRepository.findByEmail(createInvocieRequest.getEmail());
@@ -88,10 +88,12 @@ public class InvoiceServiceImpl implements InvoiceService {
                     .description(createInvocieRequest.getDescription())
                     .paymentMethods(createInvocieRequest.getPaymentMethods())
                     .status(Invoice.NEW)
+                    .type(type)
                     .createdAt(new Date())
                     .build();
             Invoice saveInvoice = invoiceRepository.save(invoice);
 
+            //lưu hóa đơn chi tiết
             for (CartRequest cartRequest : createInvocieRequest.getCartRequests()) {
                 Product product = productRepository.findByIdAndStatus(cartRequest.getProductId(), "A");
                 InvoiceDetails invoiceDetails = InvoiceDetails.builder()
@@ -103,7 +105,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                         .build();
                 invoiceDetailsRepository.save(invoiceDetails);
 
-                if (!cartRequest.getListToppingId().isEmpty()) {
+                if (cartRequest.getListToppingId() != null) {
                     for (Long toppingId : cartRequest.getListToppingId()) {
                         Topping topping = toppingRepository.findById(toppingId).get();
                         DetailTopping detailTopping = DetailTopping.builder()
@@ -115,15 +117,17 @@ public class InvoiceServiceImpl implements InvoiceService {
                     }
                 }
             }
-            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, ModelMapperUtils.map(saveInvoice, InvoiceDto.class));
+            return ModelMapperUtils.map(saveInvoice, InvoiceDto.class);
         } catch (Exception e) {
-            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE, new InvoiceDto());
+            System.out.println(e);
+            throw new Exception();
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
+
     @Override
-    public ResponeData<InvoiceDto> updated(Long id, UpdateInvoiceRequest updateInvoiceRequest) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public ResponeData<InvoiceDto> update(Long id, UpdateInvoiceRequest updateInvoiceRequest) throws Exception {
         Invoice invoice = invoiceRepository.findByIdAndStatus(id, "A");
         if (invoice == null) {
             return new ResponeData<>(AppConstant.FILE_NOT_FOUND_CODE, AppConstant.FILE_NOT_FOUND_MESSAGE, null);

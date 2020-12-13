@@ -13,9 +13,5 @@ public interface InvoiceDetailsService {
 
     InvoiceDetailDto getInvoiceDetails(Long id);
 
-
-
-
-
     Double revenue(Date fromDate, Date toDate);
 }

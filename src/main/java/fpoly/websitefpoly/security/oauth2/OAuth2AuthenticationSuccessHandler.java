@@ -46,7 +46,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
             return;
         }
-
+        System.out.println("onAuthenticationSuccess");
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }

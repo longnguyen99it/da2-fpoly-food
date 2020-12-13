@@ -20,9 +20,9 @@ import java.util.Date;
 public interface InvoiceService {
     ResponeData<Page<InvoiceDto>> search(String status, Pageable pageable) throws Exception;
 
-    ResponeData<InvoiceDto> created(CreateInvocieRequest createInvocieRequest) throws Exception;
+    InvoiceDto create(String type,CreateInvocieRequest createInvocieRequest) throws Exception;
 
-    ResponeData<InvoiceDto> updated(Long id, UpdateInvoiceRequest updateInvoiceRequest) throws Exception;
+    ResponeData<InvoiceDto> update(Long id, UpdateInvoiceRequest updateInvoiceRequest) throws Exception;
 
     ResponeData<InvoiceDto> details(Long id) throws Exception;
 

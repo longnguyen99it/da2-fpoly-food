@@ -3,6 +3,7 @@ package fpoly.websitefpoly.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fpoly.websitefpoly.entity.User;
+import fpoly.websitefpoly.response.ResponeData;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.util.Date;
  * @project fpoly-food
  */
 @Data
-public class InvoiceDto implements Serializable {
+public class InvoiceDto extends ResponeData<InvoiceDto> implements Serializable {
     private Long id;
 
     private Double amountTotal;

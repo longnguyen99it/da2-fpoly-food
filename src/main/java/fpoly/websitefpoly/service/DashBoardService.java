@@ -10,5 +10,5 @@ public interface DashBoardService {
 
     long countInvoiceNew();
 
-    ChartDto chart(String type,int moth,int year)throws ParseException;
+    ChartDto chart(String type, int moth, int year) throws ParseException;
 }
