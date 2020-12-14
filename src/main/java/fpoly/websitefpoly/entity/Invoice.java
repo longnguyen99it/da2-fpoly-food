@@ -54,7 +54,7 @@ public class Invoice implements Serializable {
     private String phone;
 
     @Column(name = "receiving_time")
-    private Date receivingTime;
+    private String receivingTime;
 
     @Column(name = "type")
     private String type;

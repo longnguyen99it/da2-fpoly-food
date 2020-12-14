@@ -47,8 +47,10 @@ public class InvoiceDetailsServiceImpl implements InvoiceDetailsService {
             }
             Invoice update = invoiceRepository.save(invoiceEntity.get());
             InvoiceInfo invoiceInfo = ModelMapperUtils.map(update, InvoiceInfo.class);
+
             List<InvoiceDetails> invoiceDetailsEntities = invoiceDetailsRepository.findAllByInvoice(invoiceEntity.get());
             List<CartProduct> cartProductList = new ArrayList<>();
+
             for (InvoiceDetails detailsEntity : invoiceDetailsEntities) {
                 CartProduct cartProduct = ModelMapperUtils.map(detailsEntity, CartProduct.class);
                 ProductInfo productInfo = new ProductInfo(detailsEntity.getProduct());
@@ -59,6 +61,7 @@ public class InvoiceDetailsServiceImpl implements InvoiceDetailsService {
                 } else {
                     cartProduct.setToppingList(new ArrayList<>());
                 }
+                cartProduct.setNote(detailsEntity.getNote());
                 cartProduct.setProductInfo(productInfo);
                 cartProductList.add(cartProduct);
             }

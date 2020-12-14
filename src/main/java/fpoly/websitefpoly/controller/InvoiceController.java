@@ -46,6 +46,14 @@ public class InvoiceController {
             return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE, null);
         }
     }
+    @GetMapping(value = "/offline")
+    private ResponeData<Page<InvoiceDto>> searchOffline(@RequestParam("status") String status, @PageableDefault(size = AppConstant.LIMIT_PAGE, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        try {
+            return invoiceService.searchOffline(status, pageable);
+        } catch (Exception e) {
+            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE, null);
+        }
+    }
 
     @PostMapping("/{type}")
     public ResponeData<InvoiceDto> create(@PathVariable String type, @RequestBody CreateInvocieRequest createInvocieRequest) throws Exception {
@@ -92,6 +100,11 @@ public class InvoiceController {
     @GetMapping("/cancel/{id}")
     private ResponeData<Boolean> cancel(@PathVariable Long id) {
         return invoiceService.setStatus(id, Invoice.CANCEL);
+    }
+
+    @GetMapping("/offline/{id}")
+    private ResponeData<Boolean> offlineFinish(@PathVariable Long id) {
+        return invoiceService.setStatus(id, Invoice.FINISH);
     }
 
     @GetMapping("/top-user")

@@ -25,5 +25,7 @@ public class CartProduct {
 
     private ProductInfo productInfo;
 
+    private String note;
+
     private List<ToppingDto> toppingList;
 }

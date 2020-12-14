@@ -1,7 +1,9 @@
 package fpoly.websitefpoly.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +18,9 @@ public class CreateInvocieRequest {
     private Double amountTotal;
     private String paymentMethods;
     private String deliveryAddress;
+    private String buildingAddress;
+    @JsonFormat(pattern = "hh:mm")
+    private Date receivingTime;
     private String description;
     private String phone;
     private List<CartRequest> cartRequests;

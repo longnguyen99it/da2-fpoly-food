@@ -20,8 +20,10 @@ import java.util.List;
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
 
-    @Query("SELECT inv FROM Invoice inv WHERE inv.status in (?1)")
-    Page<Invoice> searchInvoice(String[] status, Pageable pageable);
+    @Query("SELECT inv FROM Invoice inv WHERE inv.status in (?1) and inv.type = ?2")
+    Page<Invoice> searchInvoice(String[] status,String type, Pageable pageable);
+
+
 
     Invoice findByIdAndStatus(Long id,String status);
 

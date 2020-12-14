@@ -26,7 +26,7 @@ public class DateTimeUtil {
 	public static final String DEFAULT_FOLDERNAME_TIME = "yyyyMMddHHmmssSSS";
 	public static final String DEFAULT_IMPORTFILE_TIME = "yyyyMMdd_HHmmssSSS";
 	public static final String DEFAULT_SHORTDATE_FTPFOLDER_ = "ddMMyyyy";
-	public static final String DEFAULT_SHORT_TIME_FORMAT = "HH:mm:ss";
+	public static final String DEFAULT_SHORT_TIME_FORMAT = "HH:mm";
 
 	public static final SimpleDateFormat SHORT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_SHORTDATEFORMAT);
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT1 = new SimpleDateFormat(DEFAULT_SIMPLEDATEFORMAT1);

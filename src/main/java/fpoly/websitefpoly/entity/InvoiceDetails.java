@@ -34,6 +34,9 @@ public class InvoiceDetails implements Serializable {
     @Column(name = "amount")
     private Double amount;
 
+    @Column(name = "note")
+    private String note;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;

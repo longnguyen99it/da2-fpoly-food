@@ -9,4 +9,5 @@ public class CartRequest {
     private Long productId;
     private Integer quantity;
     private List<Long> listToppingId;
+    private String note;
 }

@@ -1,6 +1,7 @@
 package fpoly.websitefpoly.service.impl;
 
 import fpoly.websitefpoly.common.AppConstant;
+import fpoly.websitefpoly.common.DateTimeUtil;
 import fpoly.websitefpoly.common.ModelMapperUtils;
 import fpoly.websitefpoly.dto.InvoiceDto;
 import fpoly.websitefpoly.entity.*;
@@ -10,6 +11,7 @@ import fpoly.websitefpoly.request.CreateInvocieRequest;
 import fpoly.websitefpoly.request.UpdateInvoiceRequest;
 import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.InvoiceService;
+import fpoly.websitefpoly.service.SendEmailService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,26 +30,31 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final ProductRepository productRepository;
     private final InvoiceRepository invoiceRepository;
     private final InvoiceDetailsRepository invoiceDetailsRepository;
+    private final SendEmailService sendEmailService;
 
     public InvoiceServiceImpl(ToppingRepository toppingRepository,
                               DetailToppingRepository detailToppingRepository,
                               UserRepository userRepository,
                               ProductRepository productRepository,
                               InvoiceRepository invoiceRepository,
-                              InvoiceDetailsRepository invoiceDetailsRepository) {
+                              InvoiceDetailsRepository invoiceDetailsRepository,
+                              SendEmailService sendEmailService) {
         this.toppingRepository = toppingRepository;
         this.detailToppingRepository = detailToppingRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.invoiceRepository = invoiceRepository;
         this.invoiceDetailsRepository = invoiceDetailsRepository;
+        this.sendEmailService = sendEmailService;
     }
 
     @Override
     public ResponeData<Page<InvoiceDto>> search(String status, Pageable pageable) throws Exception {
         String[] a = new String[0];
+        String type = "online";
         if (status.equals("new")) {
             a = new String[]{Invoice.NEW, Invoice.WATCHED};
+            type="offline";
         }
         if (status.equals("processing")) {
             a = new String[]{Invoice.PROCESSING};
@@ -61,7 +68,28 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (status.equals("cancel")) {
             a = new String[]{Invoice.CANCEL};
         }
-        Page<Invoice> invoicePage = invoiceRepository.searchInvoice(a, pageable);
+        Page<Invoice> invoicePage = invoiceRepository.searchInvoice(a,type, pageable);
+        Page<InvoiceDto> invoiceDtoPage = invoicePage.map(new Function<Invoice, InvoiceDto>() {
+            @Override
+            public InvoiceDto apply(Invoice invoice) {
+                InvoiceDto invoiceDto = ModelMapperUtils.map(invoice, InvoiceDto.class);
+                return invoiceDto;
+            }
+        });
+        return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, invoiceDtoPage);
+    }
+
+    @Override
+    public ResponeData<Page<InvoiceDto>> searchOffline(String status, Pageable pageable) throws Exception {
+        String[] a = new String[0];
+        String type = "offline";
+        if (status.equals("new")) {
+            a = new String[]{Invoice.NEW, Invoice.WATCHED};
+        }
+        if (status.equals("finish")) {
+            a = new String[]{Invoice.FINISH};
+        }
+        Page<Invoice> invoicePage = invoiceRepository.searchInvoice(a,type, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(new Function<Invoice, InvoiceDto>() {
             @Override
             public InvoiceDto apply(Invoice invoice) {
@@ -74,17 +102,24 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public InvoiceDto create(String type,CreateInvocieRequest createInvocieRequest) throws Exception {
+    public InvoiceDto create(String type, CreateInvocieRequest createInvocieRequest) throws Exception {
         try {
+            String email = "";
+            if (createInvocieRequest.getEmail() == null) {
+                email = "offline@gmail.com";
+            } else {
+                email = createInvocieRequest.getEmail();
+            }
+            Optional<User> user = userRepository.findByEmail(email);
 
-            Optional<User> user = userRepository.findByEmail(createInvocieRequest.getEmail());
-
+            String date = createInvocieRequest.getReceivingTime() == null ? null : DateTimeUtil.convertToShortTimeString(createInvocieRequest.getReceivingTime());
             Invoice invoice = Invoice.builder()
                     .fullName(createInvocieRequest.getFullName())
                     .user(user.get())
                     .phone(createInvocieRequest.getPhone())
                     .amountTotal(createInvocieRequest.getAmountTotal())
                     .deliveryAddress(createInvocieRequest.getDeliveryAddress())
+                    .receivingTime(date)
                     .description(createInvocieRequest.getDescription())
                     .paymentMethods(createInvocieRequest.getPaymentMethods())
                     .status(Invoice.NEW)
@@ -93,19 +128,22 @@ public class InvoiceServiceImpl implements InvoiceService {
                     .build();
             Invoice saveInvoice = invoiceRepository.save(invoice);
 
+            String proudctDetails = "";
             //lưu hóa đơn chi tiết
             for (CartRequest cartRequest : createInvocieRequest.getCartRequests()) {
                 Product product = productRepository.findByIdAndStatus(cartRequest.getProductId(), "A");
                 InvoiceDetails invoiceDetails = InvoiceDetails.builder()
                         .invoice(saveInvoice)
                         .product(product)
+                        .note(cartRequest.getNote())
                         .amount(cartRequest.getQuantity() * product.getPrice())
                         .quantity(cartRequest.getQuantity())
                         .price(product.getPrice())
                         .build();
-                invoiceDetailsRepository.save(invoiceDetails);
-
-                if (cartRequest.getListToppingId() != null) {
+                InvoiceDetails save = invoiceDetailsRepository.save(invoiceDetails);
+                proudctDetails += save.getProduct().getProductName() + "|" + save.getProduct().getPrice() + " |" +
+                        save.getQuantity() + "|" + save.getAmount() + "\n";
+                if (!cartRequest.getListToppingId().isEmpty()) {
                     for (Long toppingId : cartRequest.getListToppingId()) {
                         Topping topping = toppingRepository.findById(toppingId).get();
                         DetailTopping detailTopping = DetailTopping.builder()
@@ -117,6 +155,10 @@ public class InvoiceServiceImpl implements InvoiceService {
                     }
                 }
             }
+            if (type.equals("online")) {
+                sendEmailService.sendEmail(user.get().getEmail(), "[FPOLY FOOD] Thông tin đơn hàng", proudctDetails);
+            }
+
             return ModelMapperUtils.map(saveInvoice, InvoiceDto.class);
         } catch (Exception e) {
             System.out.println(e);

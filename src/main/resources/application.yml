@@ -8,7 +8,7 @@ spring:
   #    password: 71e1f23b8b310d4d71677437e4ccc4ca33bb2107b477a526dd02e7c0e7be545a
 
   jpa:
-    show-sql: true
+#    show-sql: true
     hibernate:
       ddl-auto: update
       #      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
