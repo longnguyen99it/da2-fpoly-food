@@ -77,7 +77,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/details/{id}")
-    private ResponeData<InvoiceDetailDto> invoiceDetails(@PathVariable Long id) {
+    private ResponeData<InvoiceDetailDto> invoiceDetails(@PathVariable Long id) throws Exception {
         return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
                 invoiceDetailsService.getInvoiceDetails(id));
     }

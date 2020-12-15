@@ -66,5 +66,5 @@ public class Invoice implements Serializable {
     @JoinColumn(name = "user_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private User user;
+    private Users users;
 }

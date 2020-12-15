@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public interface InvoiceDetailsService {
 
-    InvoiceDetailDto getInvoiceDetails(Long id);
+    InvoiceDetailDto getInvoiceDetails(Long id) throws Exception;
 
     Double revenue(Date fromDate, Date toDate);
 }

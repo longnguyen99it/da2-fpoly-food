@@ -5,7 +5,7 @@ import fpoly.websitefpoly.common.AppConstant;
 import fpoly.websitefpoly.common.ModelMapperUtils;
 import fpoly.websitefpoly.dto.InvoiceDetailDto;
 import fpoly.websitefpoly.dto.UserDto;
-import fpoly.websitefpoly.entity.User;
+import fpoly.websitefpoly.entity.Users;
 import fpoly.websitefpoly.exception.ResourceNotFoundException;
 import fpoly.websitefpoly.repository.UserRepository;
 import fpoly.websitefpoly.request.UpdateUserRequest;
@@ -42,7 +42,7 @@ public class UserController {
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
-    public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+    public Users getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
         return userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
     }

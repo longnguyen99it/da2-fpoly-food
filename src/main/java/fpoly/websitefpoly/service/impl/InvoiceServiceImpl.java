@@ -110,12 +110,12 @@ public class InvoiceServiceImpl implements InvoiceService {
             } else {
                 email = createInvocieRequest.getEmail();
             }
-            Optional<User> user = userRepository.findByEmail(email);
+            Optional<Users> user = userRepository.findByEmail(email);
 
             String date = createInvocieRequest.getReceivingTime() == null ? null : DateTimeUtil.convertToShortTimeString(createInvocieRequest.getReceivingTime());
             Invoice invoice = Invoice.builder()
                     .fullName(createInvocieRequest.getFullName())
-                    .user(user.get())
+                    .users(user.get())
                     .phone(createInvocieRequest.getPhone())
                     .amountTotal(createInvocieRequest.getAmountTotal())
                     .deliveryAddress(createInvocieRequest.getDeliveryAddress())

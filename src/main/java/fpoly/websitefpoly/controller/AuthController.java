@@ -2,7 +2,7 @@ package fpoly.websitefpoly.controller;
 
 
 import fpoly.websitefpoly.entity.AuthProvider;
-import fpoly.websitefpoly.entity.User;
+import fpoly.websitefpoly.entity.Users;
 import fpoly.websitefpoly.exception.BadRequestException;
 import fpoly.websitefpoly.payload.ApiResponse;
 import fpoly.websitefpoly.payload.AuthResponse;
@@ -65,15 +65,15 @@ public class AuthController {
         }
 
         // Creating user's account
-        User user = new User();
-        user.setName(signUpRequest.getName());
-        user.setEmail(signUpRequest.getEmail());
-        user.setPassword(signUpRequest.getPassword());
-        user.setProvider(AuthProvider.local);
+        Users users = new Users();
+        users.setName(signUpRequest.getName());
+        users.setEmail(signUpRequest.getEmail());
+        users.setPassword(signUpRequest.getPassword());
+        users.setProvider(AuthProvider.local);
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        users.setPassword(passwordEncoder.encode(users.getPassword()));
 
-        User result = userRepository.save(user);
+        Users result = userRepository.save(users);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/user/me")

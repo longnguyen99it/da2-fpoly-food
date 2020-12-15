@@ -1,8 +1,8 @@
 package fpoly.websitefpoly.security;
 
 
+import fpoly.websitefpoly.entity.Users;
 import fpoly.websitefpoly.exception.ResourceNotFoundException;
-import fpoly.websitefpoly.entity.User;
 import fpoly.websitefpoly.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,20 +25,20 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        Users users = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email : " + email)
                 );
 
-        return UserPrincipal.create(user);
+        return UserPrincipal.create(users);
     }
 
     @Transactional
     public UserDetails loadUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(
+        Users users = userRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("User", "id", id)
         );
 
-        return UserPrincipal.create(user);
+        return UserPrincipal.create(users);
     }
 }

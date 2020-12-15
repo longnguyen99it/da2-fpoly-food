@@ -2,7 +2,6 @@ package fpoly.websitefpoly.controller;
 
 import fpoly.websitefpoly.common.AppConstant;
 import fpoly.websitefpoly.dto.ChartDto;
-import fpoly.websitefpoly.dto.StatisticsDto;
 import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.DashBoardService;
 import fpoly.websitefpoly.service.InvoiceDetailsService;
@@ -38,11 +37,11 @@ public class DashBoardController {
     @GetMapping("/chart/{type}/{month}/{year}")
     private ResponeData<ChartDto> chart(@PathVariable(value = "type") String type, @PathVariable(value = "month") int month, @PathVariable(value = "year") int year) throws ParseException {
         try {
-            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE,AppConstant.SUCCESSFUL_MESAGE,
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
                     dashBoardService.chart(type, month, year));
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
-            return new ResponeData<>(AppConstant.ERROR_CODE,AppConstant.ERROR_MESSAGE);
+            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
         }
     }
 }

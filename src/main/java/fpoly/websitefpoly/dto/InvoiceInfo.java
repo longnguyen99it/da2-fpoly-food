@@ -1,10 +1,8 @@
 package fpoly.websitefpoly.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import fpoly.websitefpoly.entity.User;
+import fpoly.websitefpoly.entity.Users;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * @author Nguyen Hoang Long
@@ -32,5 +30,5 @@ public class InvoiceInfo {
     @JsonFormat(pattern = "dd/MM/YYYY")
     private String createdAt;
 
-    private User user;
+    private Users users;
 }

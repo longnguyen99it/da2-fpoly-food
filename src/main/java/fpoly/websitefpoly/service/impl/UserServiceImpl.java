@@ -6,7 +6,7 @@ import fpoly.websitefpoly.dto.InvoiceDetailDto;
 import fpoly.websitefpoly.dto.UserDto;
 import fpoly.websitefpoly.dto.UserInfoDto;
 import fpoly.websitefpoly.entity.Invoice;
-import fpoly.websitefpoly.entity.User;
+import fpoly.websitefpoly.entity.Users;
 import fpoly.websitefpoly.repository.InvoiceRepository;
 import fpoly.websitefpoly.repository.UserRepository;
 import fpoly.websitefpoly.request.UpdateUserRequest;
@@ -41,12 +41,12 @@ public class UserServiceImpl implements UserService {
     public ResponeData<List<InvoiceDetailDto>> userInvoiceDetail(String email) {
         try {
             //Tìm kiếm user
-            Optional<User> user = userRepository.findByEmail(email);
+            Optional<Users> user = userRepository.findByEmail(email);
             if (!user.isPresent()) {
                 new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
             }
             //Lấy danh sách hóa đơn của user
-            List<Invoice> invoiceList = invoiceRepository.findAllByUser(user.get());
+            List<Invoice> invoiceList = invoiceRepository.findAllByUsers(user.get());
             List<InvoiceDetailDto> invoiceDetailDtoList = new ArrayList<>();
             for (Invoice invoice : invoiceList) {
                 invoiceDetailDtoList.add(invoiceDetailsService.getInvoiceDetails(invoice.getId()));
@@ -60,10 +60,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserInfoDto> topUserInfo(Pageable pageable) {
-        Page<User> userPage = userRepository.topInvoice(Invoice.FINISH, pageable);
-        Page<UserInfoDto> userInfoDtoPage = userPage.map(new Function<User, UserInfoDto>() {
+        Page<Users> userPage = userRepository.topInvoice(Invoice.FINISH, pageable);
+        Page<UserInfoDto> userInfoDtoPage = userPage.map(new Function<Users, UserInfoDto>() {
             @Override
-            public UserInfoDto apply(User user) {
+            public UserInfoDto apply(Users user) {
                 Double totalInvoice = invoiceRepository.sumTotalInvoice(user);
                 UserInfoDto userInfoDto = ModelMapperUtils.map(user, UserInfoDto.class);
                 userInfoDto.setTotalPrice(totalInvoice.toString());
@@ -76,13 +76,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserDto updateInfoUser(UpdateUserRequest updateUserRequest) throws Exception {
-        User user = userRepository.findByEmail(updateUserRequest.getEmail()).get();
-        if (user == null) {
+        Users users = userRepository.findByEmail(updateUserRequest.getEmail()).get();
+        if (users == null) {
             throw new Exception("Không tìm thấy user");
         }
-        user.setAddress(updateUserRequest.getAddress());
-        user.setPhone(updateUserRequest.getPhone());
-        User update = userRepository.save(user);
+        users.setAddress(updateUserRequest.getAddress());
+        users.setPhone(updateUserRequest.getPhone());
+        Users update = userRepository.save(users);
         return ModelMapperUtils.map(update, UserDto.class);
     }
 }

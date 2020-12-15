@@ -1,7 +1,7 @@
 package fpoly.websitefpoly.repository;
 
 import fpoly.websitefpoly.entity.Invoice;
-import fpoly.websitefpoly.entity.User;
+import fpoly.websitefpoly.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,12 +27,12 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
 
     Invoice findByIdAndStatus(Long id,String status);
 
-    List<Invoice> findAllByUser(User user);
+    List<Invoice> findAllByUsers(Users users);
 
     long countAllByStatus(String status);
 
-    @Query("select sum(inv.amountTotal) from Invoice inv where inv.user = ?1 and inv.status = 'Hoàn_thành' group by inv.user.id")
-    double sumTotalInvoice(User user);
+    @Query("select sum(inv.amountTotal) from Invoice inv where inv.users = ?1 and inv.status = 'Hoàn_thành' group by inv.users.id")
+    double sumTotalInvoice(Users users);
 
     @Query(value = "SELECT e FROM Invoice e WHERE e.createdAt BETWEEN :startDate AND :endDate",nativeQuery = true)
     Double chartInvoice(@Param(value = "startDate") Date startDate,@Param(value = "endDate") Date endDate);

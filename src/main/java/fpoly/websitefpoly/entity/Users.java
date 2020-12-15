@@ -14,10 +14,10 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_customer", uniqueConstraints = {
+@Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email")
 })
-public class User implements Serializable {
+public class Users implements Serializable {
 
     private static final long serialVersionUID = -1000119078147252957L;
     @Id
