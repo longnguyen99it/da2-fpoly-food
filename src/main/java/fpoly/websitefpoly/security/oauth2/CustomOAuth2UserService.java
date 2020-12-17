@@ -43,10 +43,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
 
-        if (!checkFpoly(oAuth2UserInfo)) {
-            throw new OAuth2AuthenticationProcessingException("Không đúng định dạng email");
-        }
-
         if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
             throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
         }
@@ -66,12 +62,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         return UserPrincipal.create(users, oAuth2User.getAttributes());
-    }
-
-    private boolean checkFpoly(OAuth2UserInfo oAuth2UserInfo) {
-        Pattern pattern = Pattern.compile("^[a-z][a-z0-9_\\.]{5,32}@[a-z0-9]{2,}(\\.[a-z0-9]{2,4}){1,2}$");
-        Matcher matcher = pattern.matcher(oAuth2UserInfo.getEmail());
-        return matcher.matches();
     }
 
     private Users registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {

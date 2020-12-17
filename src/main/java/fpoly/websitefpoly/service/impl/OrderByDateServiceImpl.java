@@ -4,13 +4,16 @@ import fpoly.websitefpoly.common.DateTimeUtil;
 import fpoly.websitefpoly.common.ModelMapperUtils;
 import fpoly.websitefpoly.dto.InvoiceDetailDto;
 import fpoly.websitefpoly.dto.InvoiceDto;
+import fpoly.websitefpoly.dto.OrderByDateDto;
 import fpoly.websitefpoly.entity.*;
 import fpoly.websitefpoly.repository.*;
 import fpoly.websitefpoly.request.CartRequest;
 import fpoly.websitefpoly.request.CreateInvocieRequest;
+import fpoly.websitefpoly.request.UpdateInvoiceRequest;
 import fpoly.websitefpoly.service.InvoiceDetailsService;
 import fpoly.websitefpoly.service.OrderByDateService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,13 +45,19 @@ public class OrderByDateServiceImpl implements OrderByDateService {
     }
 
     @Override
-    public List<InvoiceDetailDto> getInvoiceOrder(String email) throws Exception {
+    public List<OrderByDateDto> getInvoiceOrder(String email) throws Exception {
         List<OrderByDate> orderByDateList = orderByDateRepository.findAllByUsersEmail(email);
-        List<InvoiceDetailDto> invoiceDetailDtoList = new ArrayList<>();
-        for (OrderByDate orderByDate : orderByDateList){
-            invoiceDetailDtoList.add(invoiceDetailsService.getInvoiceDetails(orderByDate.getInvoice().getId()));
+        List<OrderByDateDto> orderByDateDtoList = new ArrayList<>();
+        for (OrderByDate orderByDate : orderByDateList) {
+            InvoiceDetailDto invoiceDetailDto = invoiceDetailsService.getInvoiceDetails(orderByDate.getInvoice().getId());
+            OrderByDateDto orderByDateDto = OrderByDateDto.builder()
+                    .CartProduct(invoiceDetailDto.getCartProduct())
+                    .invoiceInfo(invoiceDetailDto.getInvoiceInfo())
+                    .setDefault(orderByDate.getSetDefault())
+                    .build();
+            orderByDateDtoList.add(orderByDateDto);
         }
-        return invoiceDetailDtoList;
+        return orderByDateDtoList;
     }
 
     @Override
@@ -72,7 +81,13 @@ public class OrderByDateServiceImpl implements OrderByDateService {
                 .build();
         Invoice saveInvoice = invoiceRepository.save(invoice);
 
-        String proudctDetails = "";
+        OrderByDate orderByDate = OrderByDate.builder()
+                .invoice(saveInvoice)
+                .users(user.get())
+                .setDefault(false)
+                .build();
+        orderByDateRepository.save(orderByDate);
+
         //lưu hóa đơn chi tiết
         for (CartRequest cartRequest : createInvocieRequest.getCartRequests()) {
             Product product = productRepository.findByIdAndStatus(cartRequest.getProductId(), "A");
@@ -85,8 +100,7 @@ public class OrderByDateServiceImpl implements OrderByDateService {
                     .price(product.getPrice())
                     .build();
             InvoiceDetails save = invoiceDetailsRepository.save(invoiceDetails);
-            proudctDetails += save.getProduct().getProductName() + "|" + save.getProduct().getPrice() + " |" +
-                    save.getQuantity() + "|" + save.getAmount() + "\n";
+
             if (!cartRequest.getListToppingId().isEmpty()) {
                 for (Long toppingId : cartRequest.getListToppingId()) {
                     Topping topping = toppingRepository.findById(toppingId).get();
@@ -99,6 +113,80 @@ public class OrderByDateServiceImpl implements OrderByDateService {
                 }
             }
         }
-        return ModelMapperUtils.map(saveInvoice,InvoiceDto.class);
+        return ModelMapperUtils.map(saveInvoice, InvoiceDto.class);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public InvoiceDto updateInvoiceOrder(Long id, UpdateInvoiceRequest updateInvoiceRequest) throws Exception {
+        try {
+            Invoice invoice = invoiceRepository.findById(id).get();
+            String date = updateInvoiceRequest.getReceivingTime() == null ? null : DateTimeUtil.convertToShortTimeString(updateInvoiceRequest.getReceivingTime());
+
+            invoice.setFullName(updateInvoiceRequest.getFullName());
+            invoice.setPhone(updateInvoiceRequest.getPhone());
+            invoice.setAmountTotal(updateInvoiceRequest.getAmountTotal());
+            invoice.setDeliveryAddress(updateInvoiceRequest.getDeliveryAddress());
+            invoice.setReceivingTime(date);
+            invoice.setDescription(updateInvoiceRequest.getDescription());
+            invoice.setPaymentMethods(updateInvoiceRequest.getPaymentMethods());
+            invoice.setStatus(Invoice.NEW);
+            invoice.setType("Order By Date");
+            invoice.setCreatedAt(new Date());
+
+            Invoice saveInvoice = invoiceRepository.save(invoice);
+
+            List<InvoiceDetails> invoiceDetailsList = invoiceDetailsRepository.findAllByInvoice(saveInvoice);
+            if (!invoiceDetailsList.isEmpty()) {
+                for (InvoiceDetails invoiceDetails : invoiceDetailsList) {
+                    invoiceDetailsRepository.deleteById(invoiceDetails.getId());
+                }
+            }
+            //lưu hóa đơn chi tiết
+            for (CartRequest cartRequest : updateInvoiceRequest.getCartRequests()) {
+                Product product = productRepository.findByIdAndStatus(cartRequest.getProductId(), "A");
+                InvoiceDetails invoiceDetails = InvoiceDetails.builder()
+                        .invoice(saveInvoice)
+                        .product(product)
+                        .note(cartRequest.getNote())
+                        .amount(cartRequest.getQuantity() * product.getPrice())
+                        .quantity(cartRequest.getQuantity())
+                        .price(product.getPrice())
+                        .build();
+                InvoiceDetails save = invoiceDetailsRepository.save(invoiceDetails);
+
+                if (!cartRequest.getListToppingId().isEmpty()) {
+                    for (Long toppingId : cartRequest.getListToppingId()) {
+                        Topping topping = toppingRepository.findById(toppingId).get();
+                        DetailTopping detailTopping = DetailTopping.builder()
+                                .invoiceDetails(invoiceDetails)
+                                .nameTopping(topping.getName())
+                                .priceTopping(topping.getPrice())
+                                .build();
+                        detailToppingRepository.save(detailTopping);
+                    }
+                }
+            }
+            return ModelMapperUtils.map(saveInvoice, InvoiceDto.class);
+        }catch (Exception e){
+            throw new Exception();
+        }
+    }
+
+
+    @Override
+    public Boolean setDefault(Long id, Long status) throws Exception {
+        OrderByDate orderByDate = orderByDateRepository.findById(id).get();
+        if (orderByDate == null) {
+            throw new Exception();
+        }
+        if (status == 1) {
+            orderByDate.setSetDefault(true);
+        }
+        if (status == 0) {
+            orderByDate.setSetDefault(false);
+        }
+        orderByDateRepository.save(orderByDate);
+        return true;
     }
 }

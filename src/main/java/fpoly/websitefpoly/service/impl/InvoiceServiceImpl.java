@@ -180,18 +180,18 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     private Invoice setUpdate(Invoice invoice, UpdateInvoiceRequest updateInvoiceRequest) {
-        if (!StringUtils.isEmpty(updateInvoiceRequest.getTotalPrice())) {
-            invoice.setAmountTotal(updateInvoiceRequest.getTotalPrice());
-        }
-        if (!StringUtils.isEmpty(updateInvoiceRequest.getDeliveryAddress())) {
-            invoice.setDeliveryAddress(updateInvoiceRequest.getDeliveryAddress());
-        }
-        if (!StringUtils.isEmpty(updateInvoiceRequest.getDescription())) {
-            invoice.setDescription(updateInvoiceRequest.getDescription());
-        }
-        if (!StringUtils.isEmpty(updateInvoiceRequest.getStatus())) {
-            invoice.setStatus(updateInvoiceRequest.getStatus());
-        }
+//        if (!StringUtils.isEmpty(updateInvoiceRequest.getTotalPrice())) {
+//            invoice.setAmountTotal(updateInvoiceRequest.getTotalPrice());
+//        }
+//        if (!StringUtils.isEmpty(updateInvoiceRequest.getDeliveryAddress())) {
+//            invoice.setDeliveryAddress(updateInvoiceRequest.getDeliveryAddress());
+//        }
+//        if (!StringUtils.isEmpty(updateInvoiceRequest.getDescription())) {
+//            invoice.setDescription(updateInvoiceRequest.getDescription());
+//        }
+//        if (!StringUtils.isEmpty(updateInvoiceRequest.getStatus())) {
+//            invoice.setStatus(updateInvoiceRequest.getStatus());
+//        }
         return invoice;
     }
 

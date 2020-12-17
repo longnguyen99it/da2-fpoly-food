@@ -6,6 +6,7 @@ import fpoly.websitefpoly.dto.ProductDto;
 import fpoly.websitefpoly.dto.UpdateMenuDtoRequest;
 import fpoly.websitefpoly.entity.Menu;
 import fpoly.websitefpoly.request.CreateMenuDtoRequest;
+import fpoly.websitefpoly.request.ProductRequest;
 import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,15 @@ public class MenuController {
                     menuService.delete(id));
         } catch (Exception e) {
             return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
+        }
+    }
+
+    @PutMapping("/add-product/{id}")
+    public ResponeData<MenuDto> updateProductToMenu(@PathVariable Long id, @RequestBody ProductRequest productRequest) throws Exception {
+        try {
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, menuService.addProductoMenu(id, productRequest));
+        }catch (Exception e){
+            return new ResponeData<>(AppConstant.ERROR_CODE,AppConstant.ERROR_MESSAGE);
         }
     }
 }

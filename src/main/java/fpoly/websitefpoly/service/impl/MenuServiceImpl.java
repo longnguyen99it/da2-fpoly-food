@@ -11,6 +11,7 @@ import fpoly.websitefpoly.repository.MenuProductRepository;
 import fpoly.websitefpoly.repository.MenuRepository;
 import fpoly.websitefpoly.repository.ProductRepository;
 import fpoly.websitefpoly.request.CreateMenuDtoRequest;
+import fpoly.websitefpoly.request.ProductRequest;
 import fpoly.websitefpoly.service.MenuService;
 import fpoly.websitefpoly.service.ProductService;
 import lombok.SneakyThrows;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -96,4 +98,31 @@ public class MenuServiceImpl implements MenuService {
         menuRepository.save(menu);
         return true;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public MenuDto addProductoMenu(Long id, ProductRequest productRequest) throws Exception {
+        try {
+            Menu menu = menuRepository.findById(id).get();
+            List<MenuProduct> menuProductList = menuProductRepository.findAllByMenu(menu);
+            if (!menuProductList.isEmpty()) {
+                for (MenuProduct menuProduct : menuProductList) {
+                    menuProductRepository.deleteById(menuProduct.getId());
+                }
+            }
+            for (Long productId : productRequest.getProductId()) {
+                Product product = productRepository.findById(productId).get();
+                MenuProduct menuProduct = MenuProduct.builder()
+                        .menu(menu)
+                        .product(product)
+                        .build();
+                menuProductRepository.save(menuProduct);
+            }
+            return ModelMapperUtils.map(menu, MenuDto.class);
+        }catch (Exception e){
+            throw new Exception();
+        }
+    }
+
+
 }

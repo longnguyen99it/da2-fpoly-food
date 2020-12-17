@@ -5,15 +5,11 @@ import lombok.Data;
 
 import java.util.List;
 
-/**
- * @author Nguyen Hoang Long
- * @created 11/11/2020
- * @project website-fpoly
- */
 @Data
 @Builder
-public class InvoiceDetailDto {
-
+public class OrderByDateDto {
     List<CartProduct> CartProduct;
+
     private InvoiceInfo invoiceInfo;
+    private Boolean setDefault;
 }

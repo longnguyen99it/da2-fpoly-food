@@ -1,5 +1,6 @@
 package fpoly.websitefpoly.repository;
 
+import fpoly.websitefpoly.entity.Menu;
 import fpoly.websitefpoly.entity.MenuProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,5 @@ import java.util.List;
 @Service
 public interface MenuProductRepository extends JpaRepository<MenuProduct,Long> {
     Page<MenuProduct> findAllByMenuId(Long id, Pageable pageable);
+    List<MenuProduct> findAllByMenu(Menu menu);
 }
