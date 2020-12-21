@@ -179,10 +179,10 @@ public class ProductServiceImpl implements ProductService {
     public ProductToppingDto updateTopptingByProduct(Long id, ToppingRequest toppingRequest) throws Exception {
         Product product = productRepository.findByIdAndStatus(id, "A");
         List<ProductTopping> productToppingList = productToppingRepository.findAllByProductId(product.getId());
-        for (ProductTopping productTopping : productToppingList){
+        for (ProductTopping productTopping : productToppingList) {
             productToppingRepository.delete(productTopping);
         }
-        for (Topping topping : toppingRequest.getToppingList()){
+        for (Topping topping : toppingRequest.getToppingList()) {
             ProductTopping productTopping = ProductTopping.builder()
                     .topping(topping)
                     .product(product)
@@ -191,7 +191,7 @@ public class ProductServiceImpl implements ProductService {
         }
         List<ProductTopping> productToppingList2 = productToppingRepository.findAllByProductId(product.getId());
         List<Topping> toppings = new ArrayList<>();
-        for (ProductTopping productTopping : productToppingList2){
+        for (ProductTopping productTopping : productToppingList2) {
             toppings.add(productTopping.getTopping());
         }
         ProductToppingDto productToppingDto = new ProductToppingDto(toppings);
@@ -203,7 +203,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findByIdAndStatus(id, "A");
         List<ProductTopping> productToppingList = productToppingRepository.findAllByProductId(product.getId());
         List<Topping> toppings = new ArrayList<>();
-        for (ProductTopping productTopping : productToppingList){
+        for (ProductTopping productTopping : productToppingList) {
             toppings.add(productTopping.getTopping());
         }
         ProductToppingDto productToppingDto = new ProductToppingDto(toppings);

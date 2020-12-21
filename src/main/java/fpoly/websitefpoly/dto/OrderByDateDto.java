@@ -9,7 +9,6 @@ import java.util.List;
 @Builder
 public class OrderByDateDto {
     List<CartProduct> CartProduct;
-
     private InvoiceInfo invoiceInfo;
     private Boolean setDefault;
 }

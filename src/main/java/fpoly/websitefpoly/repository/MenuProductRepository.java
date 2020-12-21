@@ -15,7 +15,8 @@ import java.util.List;
  * @project website-fpoly
  */
 @Service
-public interface MenuProductRepository extends JpaRepository<MenuProduct,Long> {
+public interface MenuProductRepository extends JpaRepository<MenuProduct, Long> {
     Page<MenuProduct> findAllByMenuId(Long id, Pageable pageable);
+
     List<MenuProduct> findAllByMenu(Menu menu);
 }

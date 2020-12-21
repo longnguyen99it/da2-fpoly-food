@@ -8,6 +8,7 @@ import fpoly.websitefpoly.response.ResponeData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -21,4 +22,6 @@ public interface UserService {
     Page<UserInfoDto> topUserInfo(Pageable pageable);
 
     UserDto updateInfoUser(UpdateUserRequest updateUserRequest) throws Exception;
+
+    String email(HttpServletRequest request);
 }

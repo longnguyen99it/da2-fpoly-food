@@ -60,8 +60,8 @@ public class DashBoardServiceImpl implements DashBoardService {
         Double value[] = new Double[day];
         for (int i = 0; i < day; i++) {
             key[i] = "Ngày : " + (i + 1);
-            String startDate = year+"-"+month+"-" + (i + 1) + " 00:00:00";
-            String endDate = year+"-"+month+"-" + (i + 1) + " 23:59:59";
+            String startDate = year + "-" + month + "-" + (i + 1) + " 00:00:00";
+            String endDate = year + "-" + month + "-" + (i + 1) + " 23:59:59";
             String sql = "select sum(inv.amountTotal) from Invoice inv where inv.createdAt " +
                     "between '" + startDate + "' and '" + endDate + "'";
             TypedQuery<Double> doubleTypedQuery = (TypedQuery<Double>) entityManager.createQuery(sql);

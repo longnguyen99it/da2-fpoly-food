@@ -12,11 +12,11 @@ import fpoly.websitefpoly.request.UpdateInvoiceRequest;
 import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.InvoiceService;
 import fpoly.websitefpoly.service.SendEmailService;
+import fpoly.websitefpoly.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -31,6 +31,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final InvoiceDetailsRepository invoiceDetailsRepository;
     private final SendEmailService sendEmailService;
+    private final UserService userService;
 
     public InvoiceServiceImpl(ToppingRepository toppingRepository,
                               DetailToppingRepository detailToppingRepository,
@@ -38,7 +39,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                               ProductRepository productRepository,
                               InvoiceRepository invoiceRepository,
                               InvoiceDetailsRepository invoiceDetailsRepository,
-                              SendEmailService sendEmailService) {
+                              SendEmailService sendEmailService, UserService userService) {
         this.toppingRepository = toppingRepository;
         this.detailToppingRepository = detailToppingRepository;
         this.userRepository = userRepository;
@@ -46,6 +47,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         this.invoiceRepository = invoiceRepository;
         this.invoiceDetailsRepository = invoiceDetailsRepository;
         this.sendEmailService = sendEmailService;
+        this.userService = userService;
     }
 
     @Override
@@ -54,7 +56,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         String type = "online";
         if (status.equals("new")) {
             a = new String[]{Invoice.NEW, Invoice.WATCHED};
-            type="offline";
+            type = "online";
         }
         if (status.equals("processing")) {
             a = new String[]{Invoice.PROCESSING};
@@ -68,7 +70,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (status.equals("cancel")) {
             a = new String[]{Invoice.CANCEL};
         }
-        Page<Invoice> invoicePage = invoiceRepository.searchInvoice(a,type, pageable);
+        Page<Invoice> invoicePage = invoiceRepository.searchInvoice(a, type, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(new Function<Invoice, InvoiceDto>() {
             @Override
             public InvoiceDto apply(Invoice invoice) {
@@ -89,7 +91,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (status.equals("finish")) {
             a = new String[]{Invoice.FINISH};
         }
-        Page<Invoice> invoicePage = invoiceRepository.searchInvoice(a,type, pageable);
+        Page<Invoice> invoicePage = invoiceRepository.searchInvoice(a, type, pageable);
         Page<InvoiceDto> invoiceDtoPage = invoicePage.map(new Function<Invoice, InvoiceDto>() {
             @Override
             public InvoiceDto apply(Invoice invoice) {
@@ -102,14 +104,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public InvoiceDto create(String type, CreateInvocieRequest createInvocieRequest) throws Exception {
+    public InvoiceDto create(String type, CreateInvocieRequest createInvocieRequest, String email) throws Exception {
         try {
-            String email = "";
-            if (createInvocieRequest.getEmail() == null) {
-                email = "offline@gmail.com";
-            } else {
-                email = createInvocieRequest.getEmail();
-            }
             Optional<Users> user = userRepository.findByEmail(email);
 
             String date = createInvocieRequest.getReceivingTime() == null ? null : DateTimeUtil.convertToShortTimeString(createInvocieRequest.getReceivingTime());
@@ -155,9 +151,9 @@ public class InvoiceServiceImpl implements InvoiceService {
                     }
                 }
             }
-            if (type.equals("online")) {
-                sendEmailService.sendEmail(user.get().getEmail(), "[FPOLY FOOD] Thông tin đơn hàng", proudctDetails);
-            }
+//            if (type.equals("online")) {
+//                sendEmailService.sendEmail(user.get().getEmail(), "[FPOLY FOOD] Thông tin đơn hàng", proudctDetails);
+//            }
 
             return ModelMapperUtils.map(saveInvoice, InvoiceDto.class);
         } catch (Exception e) {

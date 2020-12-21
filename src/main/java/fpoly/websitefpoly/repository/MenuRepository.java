@@ -12,6 +12,6 @@ import org.springframework.stereotype.Service;
  * @project website-fpoly
  */
 @Service
-public interface MenuRepository  extends JpaRepository<Menu,Long> {
+public interface MenuRepository extends JpaRepository<Menu, Long> {
     Page<Menu> findAllByStatus(String status, Pageable pageable);
 }

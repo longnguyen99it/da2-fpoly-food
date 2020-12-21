@@ -11,9 +11,9 @@ public interface OrderByDateService {
 
     List<OrderByDateDto> getInvoiceOrder(String email) throws Exception;
 
-    InvoiceDto createInvoiceOrder(CreateInvocieRequest createInvocieRequest);
+    InvoiceDto createInvoiceOrder(CreateInvocieRequest createInvocieRequest, String email);
 
     InvoiceDto updateInvoiceOrder(Long id, UpdateInvoiceRequest updateInvoiceRequest) throws Exception;
 
-    Boolean setDefault(Long id,Long status) throws Exception;
+    Boolean setDefault(Long id,String email) throws Exception;
 }

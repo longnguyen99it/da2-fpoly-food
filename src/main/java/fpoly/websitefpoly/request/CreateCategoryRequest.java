@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class CreateCategoryRequest {
-    private  String categoryName;
+    private String categoryName;
     private String image;
 }

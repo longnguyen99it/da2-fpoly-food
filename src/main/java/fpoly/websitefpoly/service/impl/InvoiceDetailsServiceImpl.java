@@ -36,7 +36,7 @@ public class InvoiceDetailsServiceImpl implements InvoiceDetailsService {
     }
 
     @Override
-    public InvoiceDetailDto getInvoiceDetails(Long id)throws Exception {
+    public InvoiceDetailDto getInvoiceDetails(Long id) throws Exception {
         try {
             Optional<Invoice> invoiceEntity = invoiceRepository.findById(id);
             if (!invoiceEntity.isPresent()) {
@@ -75,7 +75,7 @@ public class InvoiceDetailsServiceImpl implements InvoiceDetailsService {
             throw new Exception();
         }
     }
-    
+
     @Override
     public Double revenue(Date fromDate, Date toDate) {
         return null;

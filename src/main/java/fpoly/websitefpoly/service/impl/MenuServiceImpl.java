@@ -119,7 +119,7 @@ public class MenuServiceImpl implements MenuService {
                 menuProductRepository.save(menuProduct);
             }
             return ModelMapperUtils.map(menu, MenuDto.class);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception();
         }
     }

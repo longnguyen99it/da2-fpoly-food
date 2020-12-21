@@ -1,6 +1,6 @@
 package fpoly.websitefpoly.entity;
 
-public enum  AuthProvider {
+public enum AuthProvider {
     local,
     facebook,
     google,

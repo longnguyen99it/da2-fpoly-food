@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @project fpoly-food
  */
 @Data
-public class InvoiceDto  implements Serializable {
+public class InvoiceDto implements Serializable {
     private Long id;
 
     private Double amountTotal;

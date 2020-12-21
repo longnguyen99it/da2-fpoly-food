@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderByDateRepository extends JpaRepository<OrderByDate,Long> {
+public interface OrderByDateRepository extends JpaRepository<OrderByDate, Long> {
     List<OrderByDate> findAllByUsersEmail(String email);
+
+    OrderByDate findAllByInvoiceId(Long id);
 }

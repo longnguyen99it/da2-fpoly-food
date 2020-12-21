@@ -81,7 +81,7 @@ public class ProductController {
     }
 
     @PostMapping("/{id}/topping")
-    public ResponeData<ProductToppingDto> updateToppingByProduct(@PathVariable Long id,@RequestBody ToppingRequest toppingRequest) {
+    public ResponeData<ProductToppingDto> updateToppingByProduct(@PathVariable Long id, @RequestBody ToppingRequest toppingRequest) {
         try {
             return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
                     productService.updateTopptingByProduct(id, toppingRequest));

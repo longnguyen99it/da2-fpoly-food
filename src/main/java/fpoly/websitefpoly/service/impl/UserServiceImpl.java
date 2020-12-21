@@ -2,6 +2,7 @@ package fpoly.websitefpoly.service.impl;
 
 import fpoly.websitefpoly.common.AppConstant;
 import fpoly.websitefpoly.common.ModelMapperUtils;
+import fpoly.websitefpoly.config.AppProperties;
 import fpoly.websitefpoly.dto.InvoiceDetailDto;
 import fpoly.websitefpoly.dto.UserDto;
 import fpoly.websitefpoly.dto.UserInfoDto;
@@ -13,11 +14,15 @@ import fpoly.websitefpoly.request.UpdateUserRequest;
 import fpoly.websitefpoly.response.ResponeData;
 import fpoly.websitefpoly.service.InvoiceDetailsService;
 import fpoly.websitefpoly.service.UserService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,12 +30,16 @@ import java.util.function.Function;
 
 @Service
 public class UserServiceImpl implements UserService {
-
+    private final AppProperties appProperties;
     private final UserRepository userRepository;
     private final InvoiceDetailsService invoiceDetailsService;
     private final InvoiceRepository invoiceRepository;
 
-    public UserServiceImpl(UserRepository userRepository, InvoiceDetailsService invoiceDetailsService, InvoiceRepository invoiceRepository) {
+    public UserServiceImpl(AppProperties appProperties,
+                           UserRepository userRepository,
+                           InvoiceDetailsService invoiceDetailsService,
+                           InvoiceRepository invoiceRepository) {
+        this.appProperties = appProperties;
         this.userRepository = userRepository;
         this.invoiceDetailsService = invoiceDetailsService;
         this.invoiceRepository = invoiceRepository;
@@ -84,5 +93,20 @@ public class UserServiceImpl implements UserService {
         users.setPhone(updateUserRequest.getPhone());
         Users update = userRepository.save(users);
         return ModelMapperUtils.map(update, UserDto.class);
+    }
+
+    @Override
+    public String email(HttpServletRequest request) {
+        String token = "";
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            token = bearerToken.substring(7, bearerToken.length());
+        }
+
+        Claims claims = Jwts.parser()
+                .setSigningKey(appProperties.getAuth().getTokenSecret())
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
     }
 }

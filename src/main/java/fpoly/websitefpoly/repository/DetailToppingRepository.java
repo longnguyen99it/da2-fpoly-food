@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Repository
-public interface DetailToppingRepository extends JpaRepository<DetailTopping,Long> {
+public interface DetailToppingRepository extends JpaRepository<DetailTopping, Long> {
     List<DetailTopping> findAllByInvoiceDetails(InvoiceDetails invoiceDetails);
 }

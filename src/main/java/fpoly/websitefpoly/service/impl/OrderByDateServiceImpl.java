@@ -61,9 +61,9 @@ public class OrderByDateServiceImpl implements OrderByDateService {
     }
 
     @Override
-    public InvoiceDto createInvoiceOrder(CreateInvocieRequest createInvocieRequest) {
+    public InvoiceDto createInvoiceOrder(CreateInvocieRequest createInvocieRequest, String email) {
 
-        Optional<Users> user = userRepository.findByEmail(createInvocieRequest.getEmail());
+        Optional<Users> user = userRepository.findByEmail(email);
 
         String date = createInvocieRequest.getReceivingTime() == null ? null : DateTimeUtil.convertToShortTimeString(createInvocieRequest.getReceivingTime());
         Invoice invoice = Invoice.builder()
@@ -168,25 +168,25 @@ public class OrderByDateServiceImpl implements OrderByDateService {
                 }
             }
             return ModelMapperUtils.map(saveInvoice, InvoiceDto.class);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception();
         }
     }
 
 
     @Override
-    public Boolean setDefault(Long id, Long status) throws Exception {
-        OrderByDate orderByDate = orderByDateRepository.findById(id).get();
-        if (orderByDate == null) {
-            throw new Exception();
+    public Boolean setDefault(Long id,String email) throws Exception {
+        OrderByDate invoice = orderByDateRepository.findAllByInvoiceId(id);
+        List<OrderByDate> orderByDateServiceList = orderByDateRepository.findAllByUsersEmail(email);
+        for (OrderByDate orderByDate : orderByDateServiceList){
+            if(invoice.equals(orderByDate)){
+                orderByDate.setSetDefault(true);
+                orderByDateRepository.save(orderByDate);
+            }else {
+                orderByDate.setSetDefault(false);
+                orderByDateRepository.save(orderByDate);
+            }
         }
-        if (status == 1) {
-            orderByDate.setSetDefault(true);
-        }
-        if (status == 0) {
-            orderByDate.setSetDefault(false);
-        }
-        orderByDateRepository.save(orderByDate);
         return true;
     }
 }

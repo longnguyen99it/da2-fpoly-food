@@ -35,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Page<CategoryDto> search(SearchCategoryRequest seachCategoryRequest, Pageable pageable) throws Exception {
-        Page<Category> categoryPage = categoryRepository.findAllByStatus("A",pageable);
+        Page<Category> categoryPage = categoryRepository.findAllByStatus("A", pageable);
         Page<CategoryDto> categoryDtoPage = categoryPage.map(new Function<Category, CategoryDto>() {
             @Override
             public CategoryDto apply(Category category) {

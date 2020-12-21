@@ -75,8 +75,8 @@ public class MenuController {
     public ResponeData<MenuDto> updateProductToMenu(@PathVariable Long id, @RequestBody ProductRequest productRequest) throws Exception {
         try {
             return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, menuService.addProductoMenu(id, productRequest));
-        }catch (Exception e){
-            return new ResponeData<>(AppConstant.ERROR_CODE,AppConstant.ERROR_MESSAGE);
+        } catch (Exception e) {
+            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
         }
     }
 }

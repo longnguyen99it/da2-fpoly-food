@@ -18,14 +18,13 @@ import java.util.List;
  * @project fpoly-food
  */
 @Repository
-public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
+public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     @Query("SELECT inv FROM Invoice inv WHERE inv.status in (?1) and inv.type = ?2")
-    Page<Invoice> searchInvoice(String[] status,String type, Pageable pageable);
+    Page<Invoice> searchInvoice(String[] status, String type, Pageable pageable);
 
 
-
-    Invoice findByIdAndStatus(Long id,String status);
+    Invoice findByIdAndStatus(Long id, String status);
 
     List<Invoice> findAllByUsers(Users users);
 
@@ -34,6 +33,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
     @Query("select sum(inv.amountTotal) from Invoice inv where inv.users = ?1 and inv.status = 'Hoàn_thành' group by inv.users.id")
     double sumTotalInvoice(Users users);
 
-    @Query(value = "SELECT e FROM Invoice e WHERE e.createdAt BETWEEN :startDate AND :endDate",nativeQuery = true)
-    Double chartInvoice(@Param(value = "startDate") Date startDate,@Param(value = "endDate") Date endDate);
+    @Query(value = "SELECT e FROM Invoice e WHERE e.createdAt BETWEEN :startDate AND :endDate", nativeQuery = true)
+    Double chartInvoice(@Param(value = "startDate") Date startDate, @Param(value = "endDate") Date endDate);
 }

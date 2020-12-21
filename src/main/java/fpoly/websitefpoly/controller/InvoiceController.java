@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author Nguyen Hoang Long on 10/31/2020
  * @created 10/31/2020
@@ -38,16 +40,27 @@ public class InvoiceController {
         this.userService = userService;
     }
 
-    @GetMapping(value = {"", "/"})
-    private ResponeData<Page<InvoiceDto>> search(@RequestParam("status") String status, @PageableDefault(size = AppConstant.LIMIT_PAGE, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    @GetMapping("")
+    private ResponeData<Page<InvoiceDto>> search(@RequestParam("status") String status,
+                                                 @PageableDefault(
+                                                         size = AppConstant.LIMIT_PAGE,
+                                                         sort = "createdAt",
+                                                         direction = Sort.Direction.DESC
+                                                 ) Pageable pageable) {
         try {
             return invoiceService.search(status, pageable);
         } catch (Exception e) {
             return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE, null);
         }
     }
+
     @GetMapping(value = "/offline")
-    private ResponeData<Page<InvoiceDto>> searchOffline(@RequestParam("status") String status, @PageableDefault(size = AppConstant.LIMIT_PAGE, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    private ResponeData<Page<InvoiceDto>> searchOffline(@RequestParam("status") String status,
+                                                        @PageableDefault(
+                                                                size = AppConstant.LIMIT_PAGE,
+                                                                sort = "createdAt",
+                                                                direction = Sort.Direction.DESC
+                                                        ) Pageable pageable) {
         try {
             return invoiceService.searchOffline(status, pageable);
         } catch (Exception e) {
@@ -55,14 +68,19 @@ public class InvoiceController {
         }
     }
 
+
     @PostMapping("/{type}")
-    public ResponeData<InvoiceDto> create(@PathVariable String type, @RequestBody CreateInvocieRequest createInvocieRequest) throws Exception {
+    public ResponeData<InvoiceDto> create(@PathVariable String type,
+                                          @RequestBody CreateInvocieRequest createInvocieRequest,
+                                          HttpServletRequest request) throws Exception {
+        String email = userService.email(request);
         return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
-                invoiceService.create(type, createInvocieRequest));
+                invoiceService.create(type, createInvocieRequest, email));
     }
 
     @PutMapping("/{id}")
-    public ResponeData<InvoiceDto> update(@PathVariable Long id, @RequestBody UpdateInvoiceRequest updateInvoiceRequest) throws Exception {
+    public ResponeData<InvoiceDto> update(@PathVariable Long id,
+                                          @RequestBody UpdateInvoiceRequest updateInvoiceRequest) throws Exception {
         return invoiceService.update(id, updateInvoiceRequest);
     }
 
@@ -80,6 +98,21 @@ public class InvoiceController {
     private ResponeData<InvoiceDetailDto> invoiceDetails(@PathVariable Long id) throws Exception {
         return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
                 invoiceDetailsService.getInvoiceDetails(id));
+    }
+
+    @GetMapping("/offline/{id}")
+    private ResponeData<Boolean> offlineFinish(@PathVariable Long id) {
+        return invoiceService.setStatus(id, Invoice.FINISH);
+    }
+
+    @GetMapping("/top-user")
+    public ResponeData<Page<UserInfoDto>> topUserInfo(@PageableDefault(size = 10) Pageable pageable) {
+        try {
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
+                    userService.topUserInfo(pageable));
+        } catch (Exception e) {
+            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
+        }
     }
 
     @GetMapping("/transport/{id}")
@@ -102,18 +135,4 @@ public class InvoiceController {
         return invoiceService.setStatus(id, Invoice.CANCEL);
     }
 
-    @GetMapping("/offline/{id}")
-    private ResponeData<Boolean> offlineFinish(@PathVariable Long id) {
-        return invoiceService.setStatus(id, Invoice.FINISH);
-    }
-
-    @GetMapping("/top-user")
-    public ResponeData<Page<UserInfoDto>> topUserInfo(@PageableDefault(size = 10) Pageable pageable) {
-        try {
-            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE,
-                    userService.topUserInfo(pageable));
-        } catch (Exception e) {
-            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
-        }
-    }
 }
