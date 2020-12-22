@@ -7,6 +7,7 @@ import fpoly.websitefpoly.repository.UserRepository;
 import fpoly.websitefpoly.security.UserPrincipal;
 import fpoly.websitefpoly.security.oauth2.user.OAuth2UserInfo;
 import fpoly.websitefpoly.security.oauth2.user.OAuth2UserInfoFactory;
+import fpoly.websitefpoly.service.SendEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -25,6 +26,9 @@ import java.util.regex.Pattern;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Autowired
+    private SendEmailService sendEmailService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Override
@@ -40,8 +44,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
+    private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) throws Exception {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
+
+        Pattern pattern = Pattern.compile(".*@(fpt|edu).*");
+        Matcher matcher = pattern.matcher(oAuth2UserInfo.getEmail());
+        if (!matcher.matches()){
+            throw new Exception("error");
+        }
 
         if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
             throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
@@ -56,9 +66,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         users.getProvider() + " account. Please use your " + users.getProvider() +
                         " account to login.");
             }
+            System.out.println("cập nhập tk");
             users = updateExistingUser(users, oAuth2UserInfo);
         } else {
+            System.out.println("tạo mới tk");
             users = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
+            sendEmailService.sendEmail(users.getEmail(),"Chào mừng bạn đăng nhập","Chào mừng bạn đã đến với Fpoly food \n hãy gọi món ăn ngay nào");
         }
 
         return UserPrincipal.create(users, oAuth2User.getAttributes());

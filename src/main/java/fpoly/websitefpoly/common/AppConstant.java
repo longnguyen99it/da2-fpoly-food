@@ -27,10 +27,10 @@ public class AppConstant {
     public static final String HEADER_STRING = "Authorization";
     public static final long EXPIRATION_TIME_MS = 1000 * 60 * 30; // 30 minutes
 
-    // Replace with your email here: bvvvvv
-    public static final String MY_EMAIL = "longnhph07716@fpt.edu.vn";
-    // Replace password!!
-    public static final String MY_PASSWORD = "longnguyen99";
+
+    public static final String MY_EMAIL = "fpoly.food.2020@gmail.com";
+
+    public static final String MY_PASSWORD = "soicodonss199";
 
     public static final int LIMIT_PAGE = 15;
 }
