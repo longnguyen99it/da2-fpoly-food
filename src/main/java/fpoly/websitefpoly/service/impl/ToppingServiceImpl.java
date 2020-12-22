@@ -28,7 +28,7 @@ public class ToppingServiceImpl implements ToppingService {
 
     @Override
     public List<Topping> getAll() {
-        return toppingRepository.findAll();
+        return toppingRepository.findAllByStatus("A");
     }
 
     @Override

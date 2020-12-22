@@ -19,6 +19,7 @@ public interface ToppingService {
     List<Topping> getAll();
 
     ResponeData<Page<Topping>> search(Pageable pageable) throws Exception;
+
     ResponeData<Page<Topping>> findByName(String name,Pageable pageable) throws Exception;
 
     ResponeData<ToppingDto> created(CreateToppingRequest createToppingRequest) throws Exception;

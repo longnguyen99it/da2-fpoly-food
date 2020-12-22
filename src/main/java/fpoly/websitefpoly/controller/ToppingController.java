@@ -75,7 +75,6 @@ public class ToppingController {
     @PutMapping(value = "/{id}")
     public ResponeData<ToppingDto> update(@PathVariable("id") Long id, @RequestBody UpdateToppingRequest updateToppingRequest) {
         try {
-
             return toppingService.updated(id, updateToppingRequest);
         } catch (Exception e) {
             LoggerFactory.getLogger(getClass()).error(e.toString());
