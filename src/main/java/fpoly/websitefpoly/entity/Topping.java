@@ -28,4 +28,6 @@ public class Topping {
     @Column(name = "price")
     private Double price;
 
+    @Column(name = "status")
+    private String status;
 }

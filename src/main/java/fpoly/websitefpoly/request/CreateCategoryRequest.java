@@ -8,4 +8,8 @@ import java.util.List;
 public class CreateCategoryRequest {
     private String categoryName;
     private String image;
+<<<<<<< HEAD
+=======
+    private String status;
+>>>>>>> topping
 }
