@@ -1,12 +1,8 @@
 package fpoly.websitefpoly.request;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
-/**
- * @author Nguyen Hoang Long on 11/5/2020
- * @created 11/5/2020
- * @project website-fpoly
- */
 @Data
 public class CreateProductRequest {
     private String productName;

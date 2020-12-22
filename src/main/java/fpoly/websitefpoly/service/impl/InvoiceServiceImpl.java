@@ -124,7 +124,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                     .build();
             Invoice saveInvoice = invoiceRepository.save(invoice);
 
-            String proudctDetails = "";
+            StringBuffer proudctDetails = new StringBuffer("Bạn đã đặt hàng thành công \n" +
+                    "Thông tin đơn hàng: \n");
             //lưu hóa đơn chi tiết
             for (CartRequest cartRequest : createInvocieRequest.getCartRequests()) {
                 Product product = productRepository.findByIdAndStatus(cartRequest.getProductId(), "A");
@@ -137,8 +138,10 @@ public class InvoiceServiceImpl implements InvoiceService {
                         .price(product.getPrice())
                         .build();
                 InvoiceDetails save = invoiceDetailsRepository.save(invoiceDetails);
-                proudctDetails += save.getProduct().getProductName() + "|" + save.getProduct().getPrice() + " |" +
-                        save.getQuantity() + "|" + save.getAmount() + "\n";
+
+                proudctDetails.append(save.getProduct().getProductName() + " : " + save.getProduct().getPrice() + " x " +
+                        save.getQuantity() + " = " + save.getAmount() + "\n");
+
                 if (!cartRequest.getListToppingId().isEmpty()) {
                     for (Long toppingId : cartRequest.getListToppingId()) {
                         Topping topping = toppingRepository.findById(toppingId).get();
@@ -151,9 +154,9 @@ public class InvoiceServiceImpl implements InvoiceService {
                     }
                 }
             }
-//            if (type.equals("online")) {
-//                sendEmailService.sendEmail(user.get().getEmail(), "[FPOLY FOOD] Thông tin đơn hàng", proudctDetails);
-//            }
+            if (type.equals("online")) {
+                sendEmailService.sendEmail(user.get().getEmail(), "[FPOLY FOOD] Đặt hàng thành công", proudctDetails.toString());
+            }
 
             return ModelMapperUtils.map(saveInvoice, InvoiceDto.class);
         } catch (Exception e) {

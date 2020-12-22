@@ -1,6 +1,7 @@
 package fpoly.websitefpoly.request;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

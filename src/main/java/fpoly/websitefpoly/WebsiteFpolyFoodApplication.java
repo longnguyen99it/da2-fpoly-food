@@ -11,17 +11,11 @@ import javax.annotation.Resource;
 
 @SpringBootApplication
 @EnableConfigurationProperties(AppProperties.class)
-public class WebsiteFpolyFoodApplication implements CommandLineRunner {
+public class WebsiteFpolyFoodApplication {
     @Resource
     FilesStorageService storageService;
 
     public static void main(String[] args) {
         SpringApplication.run(WebsiteFpolyFoodApplication.class, args);
-    }
-
-    @Override
-    public void run(String... arg) throws Exception {
-        storageService.deleteAll();
-        storageService.init();
     }
 }

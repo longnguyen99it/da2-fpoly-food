@@ -10,9 +10,9 @@ import fpoly.websitefpoly.repository.CategoryRepository;
 import fpoly.websitefpoly.repository.ProductRepository;
 import fpoly.websitefpoly.repository.ProductToppingRepository;
 import fpoly.websitefpoly.request.*;
+import fpoly.websitefpoly.service.FilesStorageService;
 import fpoly.websitefpoly.service.ProductService;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -36,20 +36,26 @@ import java.util.List;
  */
 @Service
 public class ProductServiceImpl implements ProductService {
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final EntityManager entityManager;
+    private final EntityManagerFactory entityManagerFactory;
+    private final CategoryRepository categoryRepository;
+    private final ProductToppingRepository productToppingRepository;
+    private final FilesStorageService filesStorageService;
 
-    @Autowired
-    private EntityManager entityManager;
+    public ProductServiceImpl(ProductRepository productRepository,
+                              EntityManager entityManager,
+                              EntityManagerFactory entityManagerFactory,
+                              CategoryRepository categoryRepository,
+                              ProductToppingRepository productToppingRepository, FilesStorageService filesStorageService) {
+        this.productRepository = productRepository;
+        this.entityManager = entityManager;
+        this.entityManagerFactory = entityManagerFactory;
+        this.categoryRepository = categoryRepository;
+        this.productToppingRepository = productToppingRepository;
+        this.filesStorageService = filesStorageService;
+    }
 
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private ProductToppingRepository productToppingRepository;
 
     @Override
     public Page<ProductDto> search(SearchProductRequest searchProductRequest, Pageable pageable) throws Exception {
@@ -99,7 +105,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ProductDto created(CreateProductRequest createProductRequest) throws Exception {
+    public ProductDto create(CreateProductRequest createProductRequest) throws Exception {
         Category category = categoryRepository.findByIdAndStatus(createProductRequest.getCategoryId(), "A");
         Product product = ModelMapperUtils.map(createProductRequest, Product.class);
         product.setId(null);
@@ -115,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
         if (product == null) {
             throw new Exception("Không tìm thấy product");
         }
-        Category category = categoryRepository.findByIdAndStatus(updateProductRequest.getCategoryId(), "A");
+        Category category = categoryRepository.findById(updateProductRequest.getCategoryId()).get();
         if (category == null) {
             throw new Exception("Không tìm thấy category");
         }

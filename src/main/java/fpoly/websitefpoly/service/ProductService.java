@@ -14,7 +14,7 @@ public interface ProductService {
 
     Page<ProductDto> search(SearchProductRequest searchProductRequest, Pageable pageable) throws Exception;
 
-    ProductDto created(CreateProductRequest createProductRequest) throws Exception;
+    ProductDto create(CreateProductRequest createProductRequest) throws Exception;
 
     ProductDto update(Long id, UpdateProductRequest updateProductRequest) throws Exception;
 

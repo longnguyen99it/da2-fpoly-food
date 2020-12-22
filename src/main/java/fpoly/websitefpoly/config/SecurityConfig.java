@@ -117,7 +117,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/invoice**",
                         "/invoice/**",
                         "/menu/**",
-                        "/menu**")
+                        "/menu**",
+                        "/files/**",
+                        "/upload")
                 .permitAll()
                 .antMatchers("/auth/**", "/oauth2/**")
                 .permitAll()

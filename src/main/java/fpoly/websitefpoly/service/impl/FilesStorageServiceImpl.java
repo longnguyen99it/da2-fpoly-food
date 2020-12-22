@@ -1,12 +1,5 @@
 package fpoly.websitefpoly.service.impl;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
-
 import fpoly.websitefpoly.service.FilesStorageService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -14,9 +7,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
+
     private final Path root = Paths.get("uploads");
+
 
     @Override
     public void init() {
@@ -28,9 +31,14 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     }
 
     @Override
-    public void save(MultipartFile file) {
+    public String save(MultipartFile file) {
         try {
-            Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+            UUID uuid = UUID.randomUUID();
+            String style = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+            String filename = uuid.toString() + "." + style;
+
+            Files.copy(file.getInputStream(), this.root.resolve(filename));
+            return "/files/" + uuid + "." + style;
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }

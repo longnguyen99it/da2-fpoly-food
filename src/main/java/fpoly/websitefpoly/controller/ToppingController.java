@@ -35,14 +35,14 @@ public class ToppingController {
         }
     }
 
-    @GetMapping(value = {"/", ""})
-    public ResponeData<Page<Topping>> getAll(@PageableDefault(size = AppConstant.LIMIT_PAGE) Pageable pageable) {
-        try {
-            return toppingService.search(pageable);
-        } catch (Exception e) {
-            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
-        }
-    }
+//    @GetMapping(value = {"/", ""})
+//    public ResponeData<Page<Topping>> getAll(@PageableDefault(size = AppConstant.LIMIT_PAGE) Pageable pageable) {
+//        try {
+//            return toppingService.search(pageable);
+//        } catch (Exception e) {
+//            return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
+//        }
+//    }
 
     @GetMapping("/{name}")
     public ResponeData<Page<Topping>> findByName(@PathVariable("name") String name, @PageableDefault(size = AppConstant.LIMIT_PAGE) Pageable pageable) {

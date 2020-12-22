@@ -11,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 /**
  * @author Nguyen Hoang Long on 11/5/2020
@@ -37,7 +35,7 @@ public class ProductController {
     @PostMapping("/")
     public ResponeData<ProductDto> create(@RequestBody CreateProductRequest createProductRequest) {
         try {
-            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, productService.created(createProductRequest));
+            return new ResponeData<>(AppConstant.SUCCESSFUL_CODE, AppConstant.SUCCESSFUL_MESAGE, productService.create(createProductRequest));
 
         } catch (Exception e) {
             return new ResponeData<>(AppConstant.ERROR_CODE, AppConstant.ERROR_MESSAGE);
