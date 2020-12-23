@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CreateToppingRequest {
-    private String nameTopping;
-    private Double priceTopping;
+    private String name;
+    private Double price;
     private String status;
 }

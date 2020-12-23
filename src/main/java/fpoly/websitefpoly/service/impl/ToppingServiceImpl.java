@@ -50,8 +50,8 @@ public class ToppingServiceImpl implements ToppingService {
     public ResponeData<ToppingDto> created(CreateToppingRequest createToppingRequest) throws Exception {
         Topping topping = new Topping();
 
-        topping.setName(createToppingRequest.getNameTopping());
-        topping.setPrice(createToppingRequest.getPriceTopping());
+        topping.setName(createToppingRequest.getName());
+        topping.setPrice(createToppingRequest.getPrice());
         topping.setStatus("A");
         Topping storedTopping = toppingRepository.save(topping);
 
@@ -71,8 +71,8 @@ public class ToppingServiceImpl implements ToppingService {
         ToppingDto resultValue = new ToppingDto();
 
         Topping topping = toppingRepository.findById(id).get();
-        topping.setName(updateToppingRequest.getNameTopping());
-        topping.setPrice(updateToppingRequest.getPriceTopping());
+        topping.setName(updateToppingRequest.getName());
+        topping.setPrice(updateToppingRequest.getPrice());
         topping.setStatus(updateToppingRequest.getStatus());
 //        BeanUtils.copyProperties(updateToppingRequest, topping);
 
@@ -87,7 +87,6 @@ public class ToppingServiceImpl implements ToppingService {
             return new ResponeData<>(AppConstant.FILE_NOT_FOUND_CODE,AppConstant.FILE_NOT_FOUND_MESSAGE,null);
         }
     }
-
 
     @Override
     public ResponeData<ToppingDto> detail(Long id) throws Exception {
